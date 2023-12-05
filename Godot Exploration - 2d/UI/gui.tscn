@@ -1,0 +1,90 @@
+[gd_scene load_steps=5 format=3 uid="uid://b1h250kw14fra"]
+
+[ext_resource type="FontFile" uid="uid://bypjpyf7yrg8m" path="res://assets/fonts/ETNA.OTF" id="1_3yxl3"]
+[ext_resource type="Script" path="res://UI/gui.gd" id="1_tfl6e"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0fxax"]
+bg_color = Color(1, 0.101961, 0.113725, 1)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+expand_margin_right = 4.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_sb364"]
+bg_color = Color(0.0901961, 0.835294, 0.278431, 1)
+border_width_left = 4
+border_width_top = 4
+border_width_bottom = 4
+border_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 5
+corner_radius_bottom_left = 5
+
+[node name="GUI" type="CanvasLayer"]
+script = ExtResource("1_tfl6e")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 40
+theme_override_constants/margin_top = 40
+theme_override_constants/margin_right = 40
+theme_override_constants/margin_bottom = 40
+
+[node name="Rows" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+
+[node name="TopRow" type="HBoxContainer" parent="MarginContainer/Rows"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="MiddleRow" type="HBoxContainer" parent="MarginContainer/Rows"]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 6.0
+
+[node name="BottomRow" type="HBoxContainer" parent="MarginContainer/Rows"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="HealthSection" type="CenterContainer" parent="MarginContainer/Rows/BottomRow"]
+layout_mode = 2
+
+[node name="HealthBar" type="ProgressBar" parent="MarginContainer/Rows/BottomRow/HealthSection"]
+custom_minimum_size = Vector2(200, 35)
+layout_mode = 2
+theme_override_styles/background = SubResource("StyleBoxFlat_0fxax")
+theme_override_styles/fill = SubResource("StyleBoxFlat_sb364")
+value = 33.0
+show_percentage = false
+
+[node name="AmmoSection" type="HBoxContainer" parent="MarginContainer/Rows/BottomRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+alignment = 2
+
+[node name="CurrentAmmo" type="Label" parent="MarginContainer/Rows/BottomRow/AmmoSection"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("1_3yxl3")
+theme_override_font_sizes/font_size = 40
+text = "10"
+
+[node name="AmmoSeperator" type="Label" parent="MarginContainer/Rows/BottomRow/AmmoSection"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("1_3yxl3")
+theme_override_font_sizes/font_size = 40
+text = "/"
+
+[node name="MaxAmmo" type="Label" parent="MarginContainer/Rows/BottomRow/AmmoSection"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("1_3yxl3")
+theme_override_font_sizes/font_size = 40
+text = "10"
