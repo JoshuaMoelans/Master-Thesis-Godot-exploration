@@ -19,7 +19,6 @@ func _ready():
 	ally_ai.initialize(positions, pathfinding)
 	enemy_ai.initialize([], pathfinding)
 	gui.set_player(player)
-	pathfinding.create_navigation_map(ground)
 
 func _process(delta):
 	# TODO check performance, maybe only call recounting when ally/enemy dies?

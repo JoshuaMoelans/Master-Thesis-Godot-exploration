@@ -36,7 +36,9 @@ func get_next_position():
 
 func assign_next_position(base_location):
 	for unit in get_children():
-		# assign next position here
+		var randx = base_location.x + randf_range(-50,50)
+		var randy = base_location.y + randf_range(-50,50)
+		# assign semi-random next position here
 		var ai :AI= unit.ai
-		ai.next_position = base_location
+		ai.next_position = Vector2(randx, randy)
 		ai.set_state(AI.State.ADVANCE)

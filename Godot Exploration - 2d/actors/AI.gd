@@ -67,18 +67,14 @@ func _physics_process(delta: float) -> void:
 		State.ADVANCE:
 			# Could be optimized to not run every physics frame, but easy implementation
 			var path = pathfinding.get_new_path(global_position, next_position)
-			print(actor.global_position)
-			print(next_position)
-			print(actor.global_position.distance_to(next_position))
-			print("--------------------------------------------")
 			if path.size() > 1:
 				actor.velocity = actor.velocity_toward(path[1])
 				actor.rotate_toward(path[1])
 				actor.move_and_slide()
 				set_path_line(path)
 			# keep the line below to avoid 'clumping up' of units.
-			# TODO could use tutorial 21.14:30 to do similar 'get random position'
-			if actor.global_position.distance_to(next_position) < 15:
+			# TODO maybe add slight randomization on goal position?
+			if actor.global_position.distance_to(next_position) < 50:
 				print("arrived at advance position")
 				set_state(State.PATROL)
 				path_line.clear_points()
