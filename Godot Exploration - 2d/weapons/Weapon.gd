@@ -14,7 +14,7 @@ var is_reloading: bool = false
 @onready var end_of_gun = $EndOfGun
 @onready var animation_player = $AnimationPlayer
 @onready var muzzle_flash = $MuzzleFlash
-
+@onready var audio_player = $AudioStreamPlayer2D
 @onready var attack_cooldown = $AttackCooldown
 
 func _ready():
@@ -25,6 +25,7 @@ func shoot():
 	if current_ammo == 0 or is_reloading == true:
 		return
 	if attack_cooldown.is_stopped() and Bullet != null:
+		audio_player.play()
 		animation_player.play("muzzleflash")
 		var bullet_instance = Bullet.instantiate()
 		var direction = (end_of_gun.global_position-global_position).normalized()

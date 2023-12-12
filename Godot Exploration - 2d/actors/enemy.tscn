@@ -3,9 +3,9 @@
 [ext_resource type="Script" path="res://actors/Actor.gd" id="1_iopl5"]
 [ext_resource type="PackedScene" uid="uid://o6molutvo6rq" path="res://actors/health.tscn" id="2_e5mhq"]
 [ext_resource type="Texture2D" uid="uid://cdeimht6hkm2p" path="res://assets/kenney_top-down-shooter/Spritesheet/spritesheet_characters.png" id="3_5cd16"]
-[ext_resource type="PackedScene" uid="uid://ct8d3q8aytfrm" path="res://weapons/weapon.tscn" id="3_8v1u5"]
 [ext_resource type="PackedScene" uid="uid://l15usiweohi7" path="res://team.tscn" id="5_5g6g2"]
 [ext_resource type="PackedScene" uid="uid://c7f5l8ffw3kpb" path="res://actors/ai.tscn" id="5_ubh7e"]
+[ext_resource type="PackedScene" uid="uid://dpxt2l5me7kd" path="res://weapons/pistol.tscn" id="6_gcqj5"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ftm6t"]
 size = Vector2(32.5, 42)
@@ -25,10 +25,10 @@ shape = SubResource("RectangleShape2D_ftm6t")
 
 [node name="Health" parent="." instance=ExtResource("2_e5mhq")]
 
-[node name="Weapon" parent="." instance=ExtResource("3_8v1u5")]
-position = Vector2(22, 13)
-
 [node name="AI" parent="." instance=ExtResource("5_ubh7e")]
 
 [node name="Team" parent="." instance=ExtResource("5_5g6g2")]
 team = 1
+
+[node name="Weapon" parent="." instance=ExtResource("6_gcqj5")]
+position = Vector2(24, 13)
