@@ -16,6 +16,7 @@ enum State{
 }
 
 var current_state: int = -1 : set = set_state, get = get_state
+var previous_state: int = -1
 var actor: Actor = null
 var target:CharacterBody2D = null
 var weapon: Weapon = null
@@ -104,6 +105,7 @@ func set_weapon(weapon: Weapon):
 	self.weapon = weapon
 
 func set_state(new_state: int):
+	previous_state = current_state
 	if new_state == current_state:
 		return
 	current_state = new_state
@@ -126,7 +128,7 @@ func _on_detection_zone_body_entered(body):
 
 func _on_detection_zone_body_exited(body):
 	if target and body == target:
-		set_state(State.ADVANCE)
+		set_state(previous_state)
 		target = null
 
 
