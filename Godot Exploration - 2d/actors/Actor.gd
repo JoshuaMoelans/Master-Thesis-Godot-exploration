@@ -9,7 +9,7 @@ class_name Actor
 @export var speed:int = 100
 
 func _ready() -> void:
-	ai.initialize(self, weapon, team.team)
+	ai.initialize(self, weapon.get_child(0), team.team)
 
 func handle_hit():
 	health.health -= 20

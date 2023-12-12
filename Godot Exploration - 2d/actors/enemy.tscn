@@ -30,5 +30,7 @@ shape = SubResource("RectangleShape2D_ftm6t")
 [node name="Team" parent="." instance=ExtResource("5_5g6g2")]
 team = 1
 
-[node name="Weapon" parent="." instance=ExtResource("6_gcqj5")]
+[node name="Weapon" type="Node2D" parent="."]
+
+[node name="Pistol" parent="Weapon" instance=ExtResource("6_gcqj5")]
 position = Vector2(24, 13)
