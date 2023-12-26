@@ -23,6 +23,7 @@ var weapon: Weapon = null
 var team: int = -1
 
 var pathfinding: Pathfinding
+var initial_locations = []
 
 # PATROL STATE
 var origin: Vector2 = Vector2.ZERO  # default position
@@ -77,7 +78,10 @@ func _physics_process(delta: float) -> void:
 			# TODO maybe add slight randomization on goal position?
 			if actor.global_position.distance_to(next_position) < 50:
 				print("arrived at advance position")
-				set_state(State.PATROL)
+				if initial_locations.size() != 0:  # if more positions to cover
+					next_position = initial_locations.pop_front()
+				else:
+					set_state(State.PATROL)
 				path_line.clear_points()
 		_:
 			print("Error switch to non-existent state")

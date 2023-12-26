@@ -15,6 +15,7 @@ func initialize(position_locations: Array, pathfinding: Pathfinding):
 	self.pathfinding = pathfinding
 	for unit in get_children(): # set pathfinding for all units
 		unit.ai.pathfinding  = pathfinding
+		unit.ai.initial_locations = position_locations.duplicate()
 	self.position_locations = position_locations
 	var next_position = get_next_position()
 	if next_position != null and next_position != Vector2.ZERO:
@@ -32,7 +33,7 @@ func get_next_position():
 	print(current_position_index)
 	if current_position_index == position_locations.size():
 		current_position_index = current_position_index.size() -1
-	return next_position.global_position
+	return next_position
 
 func assign_next_position(base_location):
 	for unit in get_children():

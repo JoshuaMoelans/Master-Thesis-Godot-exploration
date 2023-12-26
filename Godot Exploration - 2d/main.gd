@@ -4,7 +4,7 @@ const GameOverscreen = preload("res://UI/game_over_screen.tscn")
 
 @onready var bullet_manager = $BulletManager
 @onready var player: Player = $Player
-@onready var position_manager = $PositionManager
+@onready var ally_map_points = $AllyMapPoints
 @onready var ally_ai = $AllyMapDirector
 @onready var enemy_ai = $EnemyMapDirector
 @onready var gui = $GUI
@@ -15,8 +15,8 @@ func _ready():
 	randomize()
 	GlobalSignals.bullet_fired.connect(bullet_manager.handle_bullet_spawned)
 	GlobalSignals.move_allies.connect(ally_ai.assign_next_position)
-	var positions = position_manager.get_positions()
-	ally_ai.initialize(positions, pathfinding)
+	var ally_next_positions = ally_map_points.get_positions()
+	ally_ai.initialize(ally_next_positions, pathfinding)
 	enemy_ai.initialize([], pathfinding)
 	gui.set_player(player)
 
