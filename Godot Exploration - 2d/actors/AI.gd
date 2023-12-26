@@ -60,6 +60,18 @@ func _physics_process(delta: float) -> void:
 					path_line.clear_points()
 		State.ENGAGE:
 			if target != null and weapon != null:
+				# Check if target is 'hittable'
+				var space_state = get_world_2d().direct_space_state
+				# use global coordinates, not local to node
+				var query = PhysicsRayQueryParameters2D.create(actor.global_position, target.global_position)
+				var result = space_state.intersect_ray(query)
+				# TODO what if not hittable now, but by ally/enemy movement they get hittable?
+				if not result["collider"].has_method("get_team"):  # check if raycast hits character
+					set_state(previous_state)
+					return
+				elif result["collider"].get_team() == actor.get_team():  # check if same team
+					set_state(previous_state)
+					return
 				actor.rotate_toward(target.global_position)
 				var angle_to_target = actor.global_position.direction_to(target.global_position).angle()
 				if abs(actor.global_position.angle_to(target.global_position)) < 0.2:
