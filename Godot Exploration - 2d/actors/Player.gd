@@ -4,6 +4,7 @@ class_name Player
 
 @export var SPEED:float = 300.0
 @onready var collision_shape = $CollisionShape2D
+@onready var sprite = $Sprite2D
 @onready var weapon_manager = $WeaponManager
 @onready var health = $Health
 @onready var team = $Team
@@ -14,6 +15,9 @@ signal move_allies(to_position:Vector2)
 signal player_health_changed(new_health)
 
 func _ready() -> void:
+	collision_shape.disabled = true
+	sprite.visible = false
+	weapon_manager.visible = false
 	pass
 
 func _physics_process(delta):

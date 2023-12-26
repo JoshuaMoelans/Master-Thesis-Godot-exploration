@@ -31,6 +31,7 @@ shape = SubResource("RectangleShape2D_ftm6t")
 [node name="WeaponManager" type="Node2D" parent="."]
 position = Vector2(27, 13)
 script = ExtResource("5_dgjau")
+disabled = true
 
 [node name="Pistol" parent="WeaponManager" instance=ExtResource("5_kebm2")]
 

@@ -5,6 +5,8 @@ signal weapon_changed(weapon: Weapon)
 @onready var current_weapon: Weapon = $Pistol
 var weapons: Array = []
 
+@export var disabled = false
+
 func _ready() -> void:
 	weapons = get_children()
 	
@@ -13,6 +15,8 @@ func _ready() -> void:
 	current_weapon.show()
 
 func _unhandled_input(event: InputEvent):
+	if disabled:
+		return
 	if current_weapon.semi_auto and event.is_action_pressed("shoot"):
 		current_weapon.shoot()
 	elif event.is_action_pressed("reload"):

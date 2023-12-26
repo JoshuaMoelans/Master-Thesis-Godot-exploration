@@ -1,10 +1,11 @@
-[gd_scene load_steps=19 format=3 uid="uid://bk5y5osc7libt"]
+[gd_scene load_steps=20 format=3 uid="uid://bk5y5osc7libt"]
 
 [ext_resource type="PackedScene" uid="uid://cinvnsnbdela7" path="res://actors/player.tscn" id="1_cfvfw"]
 [ext_resource type="Script" path="res://main.gd" id="1_tkbst"]
 [ext_resource type="PackedScene" uid="uid://df6335o1hahud" path="res://actors/enemy.tscn" id="3_p5oie"]
 [ext_resource type="Script" path="res://BulletManager.gd" id="3_w16fx"]
 [ext_resource type="Script" path="res://MapAI.gd" id="4_as1gj"]
+[ext_resource type="Script" path="res://Camera2D.gd" id="4_d2gre"]
 [ext_resource type="PackedScene" uid="uid://cg2ph64p46koj" path="res://actors/ally.tscn" id="5_ewtdt"]
 [ext_resource type="PackedScene" uid="uid://dcgan64sqftx2" path="res://map_point.tscn" id="6_oqpfw"]
 [ext_resource type="Script" path="res://AllyMapPoints.gd" id="6_useld"]
@@ -1999,6 +2000,7 @@ position = Vector2(96, 325)
 
 [node name="Camera2D" type="Camera2D" parent="Player"]
 position_smoothing_enabled = true
+script = ExtResource("4_d2gre")
 
 [node name="BulletManager" type="Node2D" parent="."]
 script = ExtResource("3_w16fx")
@@ -2017,6 +2019,9 @@ position = Vector2(940, 569)
 
 [node name="MapPoint4" parent="AllyMapPoints" instance=ExtResource("6_oqpfw")]
 position = Vector2(1143, 318)
+
+[node name="MapPoint5" parent="AllyMapPoints" instance=ExtResource("6_oqpfw")]
+position = Vector2(1515, 209)
 
 [node name="AllyMapDirector" type="Node2D" parent="."]
 script = ExtResource("4_as1gj")
@@ -2054,5 +2059,6 @@ position = Vector2(710, 303)
 rotation = 3.13175
 
 [node name="GUI" parent="." instance=ExtResource("10_5qbhp")]
+visible = false
 
 [node name="Pathfinding" parent="." instance=ExtResource("11_jbc4g")]
