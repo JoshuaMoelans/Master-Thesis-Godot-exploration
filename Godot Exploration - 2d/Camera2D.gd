@@ -4,10 +4,11 @@ var player_ref
 
 var zoomSpeed = 10
 var zoomStep = 0.1
+
 var zoomMin = 0.2
 var zoomMax = 2
 
-var new_zoom = 1.0
+@export var new_zoom = 1.0
 
 func _ready():
 	player_ref = get_parent()

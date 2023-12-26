@@ -2,34 +2,48 @@ extends Node2D
 
 const GameOverscreen = preload("res://UI/game_over_screen.tscn")
 
-@onready var bullet_manager = $BulletManager
+# TODO fix this structure for multiple game instances
+@onready var bullet_manager_1 = $Game_Instance/BulletManager
+@onready var ally_map_points_1 = $Game_Instance/AllyMapPoints
+@onready var ally_ai_1 = $Game_Instance/AllyMapDirector
+@onready var enemy_ai_1 = $Game_Instance/EnemyMapDirector
+@onready var pathfinding_1 = $Game_Instance/Pathfinding
+
+@onready var bullet_manager_2 = $Game_Instance2/BulletManager
+@onready var ally_map_points_2 = $Game_Instance2/AllyMapPoints
+@onready var ally_ai_2 = $Game_Instance2/AllyMapDirector
+@onready var enemy_ai_2 = $Game_Instance2/EnemyMapDirector
+@onready var pathfinding_2 = $Game_Instance2/Pathfinding
+
 @onready var player: Player = $Player
-@onready var ally_map_points = $AllyMapPoints
-@onready var ally_ai = $AllyMapDirector
-@onready var enemy_ai = $EnemyMapDirector
 @onready var gui = $GUI
-@onready var ground = $Ground
-@onready var pathfinding = $Pathfinding
+
+
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	randomize()
-	GlobalSignals.bullet_fired.connect(bullet_manager.handle_bullet_spawned)
-	GlobalSignals.move_allies.connect(ally_ai.assign_next_position)
-	var ally_next_positions = ally_map_points.get_positions()
-	ally_ai.initialize(ally_next_positions, pathfinding)
-	enemy_ai.initialize([], pathfinding)
+	GlobalSignals.bullet_fired.connect(bullet_manager_1.handle_bullet_spawned)
+	#GlobalSignals.move_allies.connect(ally_ai.assign_next_position)
+	var ally_next_positions_1 = ally_map_points_1.get_positions()
+	ally_ai_1.initialize(ally_next_positions_1, pathfinding_1)
+	enemy_ai_1.initialize([], pathfinding_1)
+	
+	var ally_next_positions_2 = ally_map_points_2.get_positions()
+	ally_ai_2.initialize(ally_next_positions_2, pathfinding_2)
+	enemy_ai_2.initialize([], pathfinding_2)
 	gui.set_player(player)
 
 func _process(delta):
-	# TODO check performance, maybe only call recounting when ally/enemy dies?
-	var allies_left = ally_ai.get_child_count()
-	if allies_left == 0:
-		all_allies_died()
-		return
-	var enemies_left = enemy_ai.get_child_count()
-	if enemies_left == 0:
-		all_enemies_died()
-		return
+	pass
+	# TODO replace with game instance level checks?
+	#var allies_left = ally_ai.get_child_count()
+	#if allies_left == 0:
+		#all_allies_died()
+		#return
+	#var enemies_left = enemy_ai.get_child_count()
+	#if enemies_left == 0:
+		#all_enemies_died()
+		#return
 
 func all_allies_died():
 	var game_over = GameOverscreen.instantiate()
