@@ -15,6 +15,18 @@ const GameOverscreen = preload("res://UI/game_over_screen.tscn")
 @onready var enemy_ai_2 = $Game_Instance2/EnemyMapDirector
 @onready var pathfinding_2 = $Game_Instance2/Pathfinding
 
+@onready var bullet_manager_3 = $Game_Instance3/BulletManager
+@onready var ally_map_points_3 = $Game_Instance3/AllyMapPoints
+@onready var ally_ai_3 = $Game_Instance3/AllyMapDirector
+@onready var enemy_ai_3 = $Game_Instance3/EnemyMapDirector
+@onready var pathfinding_3 = $Game_Instance3/Pathfinding
+
+@onready var bullet_manager_4 = $Game_Instance4/BulletManager
+@onready var ally_map_points_4 = $Game_Instance4/AllyMapPoints
+@onready var ally_ai_4 = $Game_Instance4/AllyMapDirector
+@onready var enemy_ai_4 = $Game_Instance4/EnemyMapDirector
+@onready var pathfinding_4 = $Game_Instance4/Pathfinding
+
 @onready var player: Player = $Player
 @onready var gui = $GUI
 
@@ -31,28 +43,13 @@ func _ready():
 	var ally_next_positions_2 = ally_map_points_2.get_positions()
 	ally_ai_2.initialize(ally_next_positions_2, pathfinding_2)
 	enemy_ai_2.initialize([], pathfinding_2)
-	gui.set_player(player)
-
-func _process(delta):
-	pass
-	# TODO replace with game instance level checks?
-	#var allies_left = ally_ai.get_child_count()
-	#if allies_left == 0:
-		#all_allies_died()
-		#return
-	#var enemies_left = enemy_ai.get_child_count()
-	#if enemies_left == 0:
-		#all_enemies_died()
-		#return
-
-func all_allies_died():
-	var game_over = GameOverscreen.instantiate()
-	add_child(game_over)
-	get_tree().paused = true
-	game_over.set_title(false)
 	
-func all_enemies_died():
-	var game_over = GameOverscreen.instantiate()
-	add_child(game_over)
-	game_over.set_title(true)
-	get_tree().paused = true
+	var ally_next_positions_3 = ally_map_points_3.get_positions()
+	ally_ai_3.initialize(ally_next_positions_3, pathfinding_3)
+	enemy_ai_3.initialize([], pathfinding_3)
+	
+	var ally_next_positions_4 = ally_map_points_4.get_positions()
+	ally_ai_4.initialize(ally_next_positions_4, pathfinding_4)
+	enemy_ai_4.initialize([], pathfinding_4)
+	
+	gui.set_player(player)

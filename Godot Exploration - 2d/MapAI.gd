@@ -1,5 +1,5 @@
 extends Node2D
-
+class_name Director
 
 enum PositionMoveOrder {
 	FIRST,
@@ -11,9 +11,22 @@ var position_locations: Array = []
 var current_position_index = 0
 var pathfinding: Pathfinding
 
+var unit_count = 0
+
+signal game_over
+
+func reduce_count():
+	unit_count -= 1
+	if unit_count == 0:
+		print("All units died in " + self.get_name())
+		game_over.emit()
+
+
 func initialize(position_locations: Array, pathfinding: Pathfinding):
 	self.pathfinding = pathfinding
 	for unit in get_children(): # set pathfinding for all units
+		unit.actor_director = self # set unit director to this
+		unit_count += 1
 		unit.ai.pathfinding  = pathfinding
 		unit.ai.initial_locations = position_locations.duplicate()
 	self.position_locations = position_locations

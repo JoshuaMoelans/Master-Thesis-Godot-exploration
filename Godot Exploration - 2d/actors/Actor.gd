@@ -8,12 +8,16 @@ class_name Actor
 @onready var team = $Team
 @export var speed:int = 100
 
+var actor_director:Director
+
 func _ready() -> void:
 	ai.initialize(self, weapon.get_child(0), team.team)
 
 func handle_hit():
 	health.health -= 20
 	if health.health <= 0:
+		# send message to director on death
+		actor_director.reduce_count()
 		queue_free()
 
 func rotate_toward(location: Vector2):
