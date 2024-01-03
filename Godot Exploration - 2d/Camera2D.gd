@@ -5,7 +5,7 @@ var player_ref
 var zoomSpeed = 10
 var zoomStep = 0.1
 
-var zoomMin = 0.2
+var zoomMin = 0.1
 var zoomMax = 2
 
 @export var new_zoom = 1.0
@@ -21,7 +21,7 @@ func _process(delta):
 	zoom.x = clamp(zoom.x, zoomMin, zoomMax)
 	zoom.y = clamp(zoom.y, zoomMin, zoomMax)
 
-	player_ref.SPEED = 300*(zoomMax*1.5-zoom.x)
+	player_ref.SPEED = 500*(zoomMax*1.5-zoom.x)
 
 	
 
