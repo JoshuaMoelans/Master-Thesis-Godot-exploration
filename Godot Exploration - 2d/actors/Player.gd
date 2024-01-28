@@ -30,6 +30,8 @@ func _physics_process(delta):
 		movement_dir.y = -1
 	if Input.is_action_pressed("down"):
 		movement_dir.y = 1
+	if Input.is_action_pressed("reset_scene"):
+		get_tree().reload_current_scene()
 		
 	movement_dir = movement_dir.normalized()  # make sure speed is normalized
 	velocity = movement_dir*SPEED

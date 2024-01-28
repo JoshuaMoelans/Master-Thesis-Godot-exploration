@@ -29,6 +29,7 @@ func initialize(position_locations: Array, pathfinding: Pathfinding):
 		unit_count += 1
 		unit.ai.pathfinding  = pathfinding
 		unit.ai.initial_locations = position_locations.duplicate()
+		unit.ai.set_state(AI.State.PATROL) # set default state to PATROL
 	self.position_locations = position_locations
 	var next_position = get_next_position()
 	if next_position != null and next_position != Vector2.ZERO:

@@ -34,7 +34,6 @@ var patrol_location_reached: bool = false
 var next_position: Vector2 = Vector2.ZERO
 
 func _ready():
-	set_state(State.PATROL)
 	path_line.visible = should_draw_path_line
 
 func handle_reload():
@@ -53,7 +52,7 @@ func _physics_process(delta: float) -> void:
 					set_path_line(path)
 				# keep the line below to avoid 'clumping up' of units.
 				# TODO could use tutorial 21.14:30 to do similar 'get random position'
-				if actor.global_position.distance_to(patrol_location) < 5:
+				if global_position.distance_to(patrol_location) < 5:
 					patrol_location_reached = true
 					actor.velocity = Vector2.ZERO
 					patrol_timer.start()
@@ -89,7 +88,7 @@ func _physics_process(delta: float) -> void:
 			# keep the line below to avoid 'clumping up' of units.
 			# TODO maybe add slight randomization on goal position?
 			if actor.global_position.distance_to(next_position) < 50:
-				print("arrived at advance position")
+				#print("arrived at advance position")
 				if initial_locations.size() != 0:  # if more positions to cover
 					next_position = initial_locations.pop_front()
 				else:
@@ -102,7 +101,6 @@ func initialize(actor, weapon:Weapon, team:int):
 	self.actor = actor
 	self.weapon = weapon
 	self.team = team
-
 	weapon.connect("weapon_out_of_ammo", handle_reload)
 	
 func set_path_line(points: Array):

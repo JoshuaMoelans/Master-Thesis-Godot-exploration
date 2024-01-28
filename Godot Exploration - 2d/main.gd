@@ -1,55 +1,49 @@
 extends Node2D
 
 const GameOverscreen = preload("res://UI/game_over_screen.tscn")
-
-# TODO fix this structure for multiple game instances
-@onready var bullet_manager_1 = $Game_Instance/BulletManager
-@onready var ally_map_points_1 = $Game_Instance/AllyMapPoints
-@onready var ally_ai_1 = $Game_Instance/AllyMapDirector
-@onready var enemy_ai_1 = $Game_Instance/EnemyMapDirector
-@onready var pathfinding_1 = $Game_Instance/Pathfinding
-
-@onready var bullet_manager_2 = $Game_Instance2/BulletManager
-@onready var ally_map_points_2 = $Game_Instance2/AllyMapPoints
-@onready var ally_ai_2 = $Game_Instance2/AllyMapDirector
-@onready var enemy_ai_2 = $Game_Instance2/EnemyMapDirector
-@onready var pathfinding_2 = $Game_Instance2/Pathfinding
-
-@onready var bullet_manager_3 = $Game_Instance3/BulletManager
-@onready var ally_map_points_3 = $Game_Instance3/AllyMapPoints
-@onready var ally_ai_3 = $Game_Instance3/AllyMapDirector
-@onready var enemy_ai_3 = $Game_Instance3/EnemyMapDirector
-@onready var pathfinding_3 = $Game_Instance3/Pathfinding
-
-@onready var bullet_manager_4 = $Game_Instance4/BulletManager
-@onready var ally_map_points_4 = $Game_Instance4/AllyMapPoints
-@onready var ally_ai_4 = $Game_Instance4/AllyMapDirector
-@onready var enemy_ai_4 = $Game_Instance4/EnemyMapDirector
-@onready var pathfinding_4 = $Game_Instance4/Pathfinding
+var Game_Instance_Scene = preload("res://game_instance.tscn")
+@export var instance_num = 1;
 
 @onready var player: Player = $Player
 @onready var gui = $GUI
 
 
 # Called when the node enters the scene tree for the first time.
+# using deferred setup due to navigationserver error
+# see https://github.com/godotengine/godot/issues/84677
 func _ready():
+	set_physics_process(false)
+	setup()
+	
+func setup():
 	randomize()
-	GlobalSignals.bullet_fired.connect(bullet_manager_1.handle_bullet_spawned)
-	#GlobalSignals.move_allies.connect(ally_ai.assign_next_position)
-	var ally_next_positions_1 = ally_map_points_1.get_positions()
-	ally_ai_1.initialize(ally_next_positions_1, pathfinding_1)
-	enemy_ai_1.initialize([], pathfinding_1)
-	
-	var ally_next_positions_2 = ally_map_points_2.get_positions()
-	ally_ai_2.initialize(ally_next_positions_2, pathfinding_2)
-	enemy_ai_2.initialize([], pathfinding_2)
-	
-	var ally_next_positions_3 = ally_map_points_3.get_positions()
-	ally_ai_3.initialize(ally_next_positions_3, pathfinding_3)
-	enemy_ai_3.initialize([], pathfinding_3)
-	
-	var ally_next_positions_4 = ally_map_points_4.get_positions()
-	ally_ai_4.initialize(ally_next_positions_4, pathfinding_4)
-	enemy_ai_4.initialize([], pathfinding_4)
+	await get_tree().physics_frame
+	set_physics_process(true)
+	var grid_dim:int = ceil(sqrt(instance_num))
+	for i in range(instance_num):
+		print("instancing game: ", i)
+		# instance a Game_Instance from the Game_Instance scene
+		var new_game_instance = Game_Instance_Scene.instantiate()
+		add_child(new_game_instance)
+		# set Game_Instance position on grid;
+		var bounds = new_game_instance.get_node("Bounds")
+		var area = bounds.get_node("area")
+		var size = area.get_shape().get_rect().size
+		var x = (i%grid_dim)*(size.x + 350)
+		var y = (floor(i/grid_dim))*(size.y + 350)
+		new_game_instance.position = Vector2(x, y)
+		# get all (previously onready) vars needed for instance setup
+		var bullet_mgr = new_game_instance.get_node("BulletManager")
+		var ally_map_pts = new_game_instance.get_node("AllyMapPoints")
+		var ally_ai = new_game_instance.get_node("AllyMapDirector")
+		var enemy_ai = new_game_instance.get_node("EnemyMapDirector")
+		var pathfinding = new_game_instance.get_node("Pathfinding")
+		# connect Global Signal bullet fired
+		GlobalSignals.bullet_fired.connect(bullet_mgr.handle_bullet_spawned)
+		# initialize ally and enemy ai for instance
+		var ally_next_positions = ally_map_pts.get_positions()
+		ally_ai.initialize(ally_next_positions, pathfinding)
+		enemy_ai.initialize([], pathfinding)
 	
 	gui.set_player(player)
+	#get_node("Game_Instance").queue_free()  # remove first instance for debugging
