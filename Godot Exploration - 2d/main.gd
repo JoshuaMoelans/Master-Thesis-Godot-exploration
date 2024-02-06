@@ -2,8 +2,11 @@ extends Node2D
 
 const GameOverscreen = preload("res://UI/game_over_screen.tscn")
 var Game_Instance_Scene = preload("res://game_instance.tscn")
-@export var instance_num = 1;
 
+@export var instance_num = 1;
+@export var visible_games = true;
+
+@onready var GAMES = $GAMES
 @onready var player: Player = $Player
 @onready var gui = $GUI
 
@@ -15,6 +18,12 @@ func _ready():
 	set_physics_process(false)
 	setup()
 	
+
+func _physics_process(delta):
+	if Input.is_action_just_pressed("toggle_visibility"):
+		for game_instance in GAMES.get_children():
+			game_instance.visible = not game_instance.visible
+
 func setup():
 	randomize()
 	await get_tree().physics_frame
@@ -24,7 +33,8 @@ func setup():
 		print("instancing game: ", i)
 		# instance a Game_Instance from the Game_Instance scene
 		var new_game_instance = Game_Instance_Scene.instantiate()
-		add_child(new_game_instance)
+		GAMES.add_child(new_game_instance)
+		new_game_instance.visible = visible_games
 		# set Game_Instance position on grid;
 		var bounds = new_game_instance.get_node("Bounds")
 		var area = bounds.get_node("area")

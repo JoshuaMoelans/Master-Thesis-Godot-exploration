@@ -1,13 +1,16 @@
-[gd_scene load_steps=5 format=3 uid="uid://bk5y5osc7libt"]
+[gd_scene load_steps=6 format=3 uid="uid://bk5y5osc7libt"]
 
 [ext_resource type="PackedScene" uid="uid://cinvnsnbdela7" path="res://actors/player.tscn" id="1_cfvfw"]
 [ext_resource type="Script" path="res://main.gd" id="1_tkbst"]
 [ext_resource type="Script" path="res://Camera2D.gd" id="4_d2gre"]
+[ext_resource type="Script" path="res://FPSctr.gd" id="5_ivfvg"]
 [ext_resource type="PackedScene" uid="uid://b1h250kw14fra" path="res://UI/gui.tscn" id="10_5qbhp"]
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_tkbst")
 instance_num = 9
+
+[node name="GAMES" type="Node2D" parent="."]
 
 [node name="Player" parent="." instance=ExtResource("1_cfvfw")]
 position = Vector2(2736, 1241)
@@ -19,3 +22,11 @@ new_zoom = 0.2
 
 [node name="GUI" parent="." instance=ExtResource("10_5qbhp")]
 visible = false
+
+[node name="FPS" type="CanvasLayer" parent="."]
+
+[node name="ctr" type="Label" parent="FPS"]
+offset_right = 40.0
+offset_bottom = 23.0
+text = "FPS: 42"
+script = ExtResource("5_ivfvg")

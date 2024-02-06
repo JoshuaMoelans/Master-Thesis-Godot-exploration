@@ -24,7 +24,7 @@ var team: int = -1
 
 var pathfinding: Pathfinding
 var initial_locations = []
-
+var current_path = []
 # PATROL STATE
 var origin: Vector2 = Vector2.ZERO  # default position
 var patrol_location: Vector2 = Vector2.ZERO
@@ -39,17 +39,23 @@ func _ready():
 func handle_reload():
 	weapon.start_reload()
 
+
 func _physics_process(delta: float) -> void:
 	path_line.global_rotation = 0 # reset pathing line rotation
 	match current_state:
 		State.PATROL:
 			if not patrol_location_reached:
-				var path = pathfinding.get_new_path(global_position, patrol_location)
+				if current_path.size() == 0:
+					# caching path for patrol
+					current_path = pathfinding.get_new_path(global_position, patrol_location)
+				var path = current_path
 				if path.size() > 1:
 					actor.velocity = actor.velocity_toward(path[1])
-					actor.move_and_slide()  # TODO fix this; if path becomes blocked, weird behaviour occurs
+					actor.move_and_slide()
 					actor.rotate_toward(path[1])
 					set_path_line(path)
+					if global_position.distance_to(path[1]) < 5:
+						current_path.pop_front()  # remove path steps one by one when reaching point
 				# keep the line below to avoid 'clumping up' of units.
 				# TODO could use tutorial 21.14:30 to do similar 'get random position'
 				if global_position.distance_to(patrol_location) < 5:
@@ -57,6 +63,7 @@ func _physics_process(delta: float) -> void:
 					actor.velocity = Vector2.ZERO
 					patrol_timer.start()
 					path_line.clear_points()
+					current_path = []
 		State.ENGAGE:
 			if target != null and weapon != null:
 				# Check if target is 'hittable'
@@ -77,17 +84,23 @@ func _physics_process(delta: float) -> void:
 					weapon.shoot()
 			else:
 				print("Engage state but lacking weapon/target")
+				print("\t weapon is: ",str(weapon))
+				print("\t target is: ",str(target))
 		State.ADVANCE:
-			# Could be optimized to not run every physics frame, but easy implementation
-			var path = pathfinding.get_new_path(global_position, next_position)
+			if current_path.size() == 0:
+				current_path = pathfinding.get_new_path(global_position, next_position)
+			var path = current_path
 			if path.size() > 1:
 				actor.velocity = actor.velocity_toward(path[1])
-				actor.rotate_toward(path[1])
 				actor.move_and_slide()
+				actor.rotate_toward(path[1])
 				set_path_line(path)
+				if global_position.distance_to(path[1]) < 5:
+					current_path.pop_front()  # remove path steps one by one when reaching point
 			# keep the line below to avoid 'clumping up' of units.
 			# TODO maybe add slight randomization on goal position?
 			if actor.global_position.distance_to(next_position) < 50:
+				current_path = []
 				#print("arrived at advance position")
 				if initial_locations.size() != 0:  # if more positions to cover
 					next_position = initial_locations.pop_front()
@@ -143,7 +156,7 @@ func _on_detection_zone_body_entered(body):
 func _on_detection_zone_body_exited(body):
 	if target and body == target:
 		set_state(previous_state)
-		target = null
+		target = null  # TODO what if target dies, does this trigger?
 
 
 func _on_patrol_timer_timeout():
@@ -160,4 +173,5 @@ func _on_patrol_timer_timeout():
 	else:
 		clamp(random_y, -patrol_range, -min_patrol_range)
 	patrol_location = Vector2(random_x, random_y) + origin
+	# TODO add check whether patrol location is reachable
 	patrol_location_reached = false

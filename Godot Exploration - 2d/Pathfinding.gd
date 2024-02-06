@@ -4,7 +4,7 @@ class_name  Pathfinding
 var nav_map: RID
 
 func _ready():
-	nav_map = get_world_2d().get_navigation_map()	
+	nav_map = get_world_2d().get_navigation_map()
 
 # start and end are both in world coordinates
 func get_new_path(start: Vector2, end:Vector2) -> Array:
