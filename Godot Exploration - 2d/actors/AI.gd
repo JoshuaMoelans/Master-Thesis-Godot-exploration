@@ -37,6 +37,7 @@ func _ready():
 	path_line.visible = should_draw_path_line
 
 func handle_reload():
+	printhelper(actor, " reloading weapon", "")
 	weapon.start_reload()
 
 
@@ -55,10 +56,12 @@ func _physics_process(delta: float) -> void:
 					actor.rotate_toward(path[1])
 					set_path_line(path)
 					if global_position.distance_to(path[1]) < 5:
+						printhelper(actor, " reached next PATROL path point: ", path[1])
 						current_path.pop_front()  # remove path steps one by one when reaching point
 				# keep the line below to avoid 'clumping up' of units.
 				# TODO could use tutorial 21.14:30 to do similar 'get random position'
 				if global_position.distance_to(patrol_location) < 5:
+					printhelper(actor, " reached PATROL location: ", patrol_location)
 					patrol_location_reached = true
 					actor.velocity = Vector2.ZERO
 					patrol_timer.start()
@@ -78,9 +81,13 @@ func _physics_process(delta: float) -> void:
 				elif result["collider"].get_team() == actor.get_team():  # check if same team
 					set_state(previous_state)
 					return
+				printhelper(actor, " engaging rival at position: ", target.global_position)
+				printhelper(actor, " engaging rival from position: ", actor.global_position)
 				actor.rotate_toward(target.global_position)
 				var angle_to_target = actor.global_position.direction_to(target.global_position).angle()
 				if abs(actor.global_position.angle_to(target.global_position)) < 0.2:
+					printhelper(actor, " shooting rival at position: ", target.global_position)
+					printhelper(actor, " shooting rival from position: ", actor.global_position)
 					weapon.shoot()
 			else:
 				print("Engage state but lacking weapon/target")
@@ -96,10 +103,12 @@ func _physics_process(delta: float) -> void:
 				actor.rotate_toward(path[1])
 				set_path_line(path)
 				if global_position.distance_to(path[1]) < 5:
+					printhelper(actor, " reached next ADVANCE path point: ", path[1])
 					current_path.pop_front()  # remove path steps one by one when reaching point
 			# keep the line below to avoid 'clumping up' of units.
 			# TODO maybe add slight randomization on goal position?
 			if actor.global_position.distance_to(next_position) < 50:
+				printhelper(actor, " reached next ADVANCE position: ", next_position)
 				current_path = []
 				#print("arrived at advance position")
 				if initial_locations.size() != 0:  # if more positions to cover
@@ -109,6 +118,18 @@ func _physics_process(delta: float) -> void:
 				path_line.clear_points()
 		_:
 			print("Error switch to non-existent state")
+
+# helper function; takes in actor, text and single piece of data to print
+# gets current actor scope (container and instance) for output
+func printhelper(actor, text, data):
+	var container = actor.get_parent()
+	var instance = container.get_parent()
+	var mainOutputHandler : OutputHandler = instance.get_parent().get_parent().get_node("outputhandler")
+	var output = instance.name + "/" + container.name + "/" + actor.name + text + str(data)
+	mainOutputHandler.write_to_instance_buffer(instance.id, output)
+	if instance.verbose: # don't print if not verbose
+		print(output)
+
 
 func initialize(actor, weapon:Weapon, team:int):
 	self.actor = actor
@@ -136,6 +157,7 @@ func set_state(new_state: int):
 	if new_state == current_state:
 		return
 	current_state = new_state
+	printhelper(actor, " entering state ", State.keys()[new_state])
 	if new_state == State.PATROL:
 		patrol_timer.start()
 		origin = global_position
@@ -173,5 +195,6 @@ func _on_patrol_timer_timeout():
 	else:
 		clamp(random_y, -patrol_range, -min_patrol_range)
 	patrol_location = Vector2(random_x, random_y) + origin
+	printhelper(actor, " set new PATROL destination: ", patrol_location)
 	# TODO add check whether patrol location is reachable
 	patrol_location_reached = false

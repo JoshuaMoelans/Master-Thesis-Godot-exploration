@@ -9,7 +9,7 @@ var Game_Instance_Scene = preload("res://game_instance.tscn")
 @onready var GAMES = $GAMES
 @onready var player: Player = $Player
 @onready var gui = $GUI
-
+@onready var outputhandler = $outputhandler
 
 # Called when the node enters the scene tree for the first time.
 # using deferred setup due to navigationserver error
@@ -29,10 +29,12 @@ func setup():
 	await get_tree().physics_frame
 	set_physics_process(true)
 	var grid_dim:int = ceil(sqrt(instance_num))
+	outputhandler.init(instance_num)  # initialize file output handler
 	for i in range(instance_num):
-		print("instancing game: ", i)
 		# instance a Game_Instance from the Game_Instance scene
-		var new_game_instance = Game_Instance_Scene.instantiate()
+		var new_game_instance:GameInstance = Game_Instance_Scene.instantiate()
+		new_game_instance.name = "game_instance_" + str(i)
+		new_game_instance.id = i
 		GAMES.add_child(new_game_instance)
 		new_game_instance.visible = visible_games
 		# set Game_Instance position on grid;
@@ -57,3 +59,9 @@ func setup():
 	
 	gui.set_player(player)
 	#get_node("Game_Instance").queue_free()  # remove first instance for debugging
+
+
+func _on_time_out_timeout():
+	outputhandler.write_buffered_data()
+	outputhandler.write_to_file("main", "games timed out")
+	get_tree().quit()

@@ -15,8 +15,16 @@ func _ready() -> void:
 
 func handle_hit():
 	health.health -= 20
+	# helper function; takes in actor, text and single piece of data to print
+	# gets current actor scope (container and instance) for output
+	var container = self.get_parent()
+	var instance = container.get_parent()
+	if instance.verbose:
+		print(instance.name, "/", container.name, "/", self.name, " got hit")
 	if health.health <= 0:
-		# send message to director on death
+		if instance.verbose:
+			print(instance.name, "/", container.name, "/", self.name, " died")
+		# send message to director on death			
 		actor_director.reduce_count()
 		queue_free()
 
