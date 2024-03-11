@@ -30,6 +30,8 @@ var origin: Vector2 = Vector2.ZERO  # default position
 var patrol_location: Vector2 = Vector2.ZERO
 var patrol_location_reached: bool = false
 
+var AI_State = {} # similar state structure for all agents
+
 # ADVANCE STATE
 var next_position: Vector2 = Vector2.ZERO
 
@@ -39,7 +41,10 @@ func _ready():
 func handle_reload():
 	printhelper(actor, " reloading weapon", "")
 	weapon.start_reload()
+	update_AI_ammo(weapon.current_ammo)
 
+func get_AI_state():
+	return AI_State
 
 func _physics_process(delta: float) -> void:
 	path_line.global_rotation = 0 # reset pathing line rotation
@@ -48,8 +53,10 @@ func _physics_process(delta: float) -> void:
 			if not patrol_location_reached:
 				if current_path.size() == 0:
 					# caching path for patrol
+					update_AI_goal(patrol_location)
 					current_path = pathfinding.get_new_path(global_position, patrol_location)
 				var path = current_path
+				update_AI_path(current_path)
 				if path.size() > 1:
 					actor.velocity = actor.velocity_toward(path[1])
 					actor.move_and_slide()
@@ -88,15 +95,19 @@ func _physics_process(delta: float) -> void:
 				if abs(actor.global_position.angle_to(target.global_position)) < 0.2:
 					printhelper(actor, " shooting rival at position: ", target.global_position)
 					printhelper(actor, " shooting rival from position: ", actor.global_position)
+					update_AI_aim(target.global_position)
 					weapon.shoot()
+					update_AI_ammo(weapon.current_ammo)
 			else:
 				print("Engage state but lacking weapon/target")
 				print("\t weapon is: ",str(weapon))
 				print("\t target is: ",str(target))
 		State.ADVANCE:
 			if current_path.size() == 0:
+				update_AI_goal(next_position)
 				current_path = pathfinding.get_new_path(global_position, next_position)
 			var path = current_path
+			update_AI_path(current_path)
 			if path.size() > 1:
 				actor.velocity = actor.velocity_toward(path[1])
 				actor.move_and_slide()
@@ -130,6 +141,43 @@ func printhelper(actor, text, data):
 	if instance.verbose: # don't print if not verbose
 		print(output)
 
+func init_AI_state():
+	AI_State["id"] = actor.get_name()	
+	AI_State["position"] = actor.global_position
+	AI_State["health"] = actor.health.health
+	AI_State["ammo"] = weapon.current_ammo
+	AI_State["path"] = []
+	AI_State["goal_position"] = null
+	AI_State["aim_direction"] = null
+	AI_State["state"] = State.PATROL
+
+signal flush_AI_state_sgn (unit_name, newstate)
+
+func flush_AI_state():
+	flush_AI_state_sgn.emit(AI_State["id"], AI_State)
+
+func update_AI_state(newstate):
+	AI_State["state"] = newstate
+	flush_AI_state()
+	
+func update_AI_health():
+	pass # TODO figure out if we can do this here or need to do it one layer higher (Actor.gd)
+	
+func update_AI_path(newpath):
+	AI_State["path"] = newpath
+	flush_AI_state()
+	
+func update_AI_ammo(newammo):
+	AI_State["ammo"] = newammo
+	flush_AI_state()
+
+func update_AI_aim(aimdir):
+	AI_State["aim_direction"] = aimdir
+	flush_AI_state()
+
+func update_AI_goal(newgoal):
+	AI_State["goal_position"] = newgoal
+	flush_AI_state()
 
 func initialize(actor, weapon:Weapon, team:int):
 	self.actor = actor
@@ -137,6 +185,7 @@ func initialize(actor, weapon:Weapon, team:int):
 	weapon.team = team
 	self.team = team
 	weapon.connect("weapon_out_of_ammo", handle_reload)
+	init_AI_state()
 	
 func set_path_line(points: Array):
 	if not should_draw_path_line:
@@ -166,6 +215,7 @@ func set_state(new_state: int):
 	elif new_state == State.ADVANCE:
 		if actor.has_reached_position(next_position):
 			set_state(State.PATROL)
+	update_AI_state(get_state())
 	
 func get_state() -> int:
 	return current_state
@@ -179,6 +229,7 @@ func _on_detection_zone_body_entered(body):
 func _on_detection_zone_body_exited(body):
 	if target and body == target:
 		set_state(previous_state)
+		update_AI_aim(null)
 		target = null  # TODO what if target dies, does this trigger?
 
 

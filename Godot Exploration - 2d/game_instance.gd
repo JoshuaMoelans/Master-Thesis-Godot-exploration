@@ -19,8 +19,12 @@ func _ready():
 	EnemyMapDirector.connect("game_over", stop_instance.bind(true))
 	for unit:Actor in AllyMapDirector.get_children():
 		unit.connect("actor_hit_by", game_state.update_dmg)
+		unit.ai.connect("flush_AI_state_sgn", game_state.update_ally_state)
+		game_state.add_ally(unit.ai.get_AI_state())
 	for unit:Actor in EnemyMapDirector.get_children():
 		unit.connect("actor_hit_by", game_state.update_dmg)
+		unit.ai.connect("flush_AI_state_sgn", game_state.update_enemy_state)
+		game_state.add_enemy(unit.ai.get_AI_state())
 	
 func stop_instance(allies_won:bool):
 	print("game over in instance: ", name)
@@ -47,7 +51,15 @@ class GameState:
 		state = {} # state is dictionary of 'interesting' values
 		state["team_damage"] = {"allies": 0, "enemies": 0}  # damage done within team (friendly fire)
 		state["damage_done"] = {"allies": 0, "enemies": 0}  # damage done to other team
-		
+		state["allies"] = {}
+		state["enemies"] = {}
+	
+	func add_ally(ally_state):
+		self.state["allies"][ally_state.id] = ally_state
+	
+	func add_enemy(enemy_state):
+		self.state["enemies"][enemy_state.id] = enemy_state
+	
 	func state_update():
 		print("flushing current game state")
 		self.state["timer"] = update_time
@@ -62,12 +74,16 @@ class GameState:
 		self.state["damage_done"][team] += damage
 		state_update()
 	
-	func update_dmg(from_team, to_team, damage):
-		if from_team == to_team:
+	func update_dmg(to_team, from_team, damage):
+		if from_team == to_team: # friendly fire
 			update_team_damage(teams[from_team], damage)
-		else:
+		else: # regular damage
 			update_damage_done(teams[from_team], damage)
-
-
-
-
+	
+	func update_ally_state(ally_name, newstate):
+		self.state["allies"][ally_name] = newstate
+		state_update()
+		
+	func update_enemy_state(enemy_name, newstate):
+		self.state["enemies"][enemy_name] = newstate
+		state_update()
