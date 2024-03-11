@@ -61,7 +61,7 @@ class GameState:
 		self.state["enemies"][enemy_state.id] = enemy_state
 	
 	func state_update():
-		print("flushing current game state")
+		print("\nflushing current game state\n")
 		self.state["timer"] = update_time
 		print(state)
 		# TODO need to flush game state (to file?) after each update/after each X updates
