@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=3 uid="uid://veyi71nt4qpr"]
+[gd_scene load_steps=21 format=3 uid="uid://veyi71nt4qpr"]
 
 [ext_resource type="Script" path="res://game_instance.gd" id="1_crv2i"]
 [ext_resource type="Texture2D" uid="uid://fjum1pgpqql" path="res://assets/kenney_top-down-shooter/Tilesheet/tilesheet_complete.png" id="1_wuy32"]
@@ -11,6 +11,7 @@
 [ext_resource type="PackedScene" uid="uid://10c33rrt8ihf" path="res://actors/pathfinding.tscn" id="8_tkwnx"]
 [ext_resource type="Texture2D" uid="uid://d26e1vhe2gayg" path="res://assets/AlliesWon.png" id="10_c67kd"]
 [ext_resource type="Texture2D" uid="uid://dcik5s8yhktl3" path="res://assets/EnemiesWon.png" id="11_1gwai"]
+[ext_resource type="Script" path="res://DataGatherer.gd" id="12_u7gco"]
 
 [sub_resource type="NavigationPolygon" id="NavigationPolygon_asvcm"]
 vertices = PackedVector2Array(32, 32, -32, 32, -32, -32, 32, -32)
@@ -2078,3 +2079,6 @@ monitorable = false
 position = Vector2(959.5, 294.5)
 shape = SubResource("RectangleShape2D_g6cmi")
 disabled = true
+
+[node name="DataGatherer" type="Node" parent="."]
+script = ExtResource("12_u7gco")
