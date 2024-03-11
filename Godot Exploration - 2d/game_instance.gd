@@ -1,6 +1,8 @@
 extends Node2D
 class_name GameInstance
 
+var update_time = 0
+
 @export var verbose = false
 @export var id = 0
 var game_state:GameState; # the current game state
@@ -28,13 +30,16 @@ func stop_instance(allies_won:bool):
 		$"Game Over/EnemiesWon".visible = true
 	# TODO also stop remaining gameplay (or reset behaviour?)
 
+func _process(delta):
+	game_state.update_time += delta
+
 # class that gathers data
 # this consists of both the Scoring Metrics:
 #	 amount of team damage vs enemy damage; time spent; total distance traversed; trade-off between metrics
 # as well as intermediate State (which can be used for scoring metrics too)
 # it's not a listener class, we want it to receive data from other sources
-
 class GameState:
+	var update_time = 0
 	var state = {};
 	var teams = ["allies", "enemies"]
 	func _init():
@@ -42,11 +47,12 @@ class GameState:
 		state = {} # state is dictionary of 'interesting' values
 		state["team_damage"] = {"allies": 0, "enemies": 0}  # damage done within team (friendly fire)
 		state["damage_done"] = {"allies": 0, "enemies": 0}  # damage done to other team
-	
+		
 	func state_update():
 		print("flushing current game state")
+		self.state["timer"] = update_time
 		print(state)
-		# TODO need to flush game state after each update
+		# TODO need to flush game state (to file?) after each update/after each X updates
 	
 	func update_team_damage(team, damage):
 		self.state["team_damage"][team] += damage
