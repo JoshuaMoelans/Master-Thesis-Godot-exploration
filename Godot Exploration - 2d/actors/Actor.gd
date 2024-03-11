@@ -10,15 +10,19 @@ class_name Actor
 
 var actor_director:Director
 
+signal actor_hit_by(own_team, bullet_team, damage)
+
 func _ready() -> void:
 	ai.initialize(self, weapon.get_child(0), team.team)
 
-func handle_hit():
-	health.health -= 20
+func handle_hit(by_team:int):
+	var dmg = 20 # TODO maybe make parameter of Bullet?
+	health.health -= dmg
 	# helper function; takes in actor, text and single piece of data to print
 	# gets current actor scope (container and instance) for output
 	var container = self.get_parent()
 	var instance = container.get_parent()
+	actor_hit_by.emit(team.team, by_team, dmg)
 	if instance.verbose:
 		print(instance.name, "/", container.name, "/", self.name, " got hit")
 	if health.health <= 0:

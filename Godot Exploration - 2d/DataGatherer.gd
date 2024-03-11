@@ -33,5 +33,6 @@ var game_state:GameState; # the current game state
 func _ready():
 	game_state = GameState.new()
 	print(game_state.state)
+	
 
 # TODO connect signal to update (team) damage

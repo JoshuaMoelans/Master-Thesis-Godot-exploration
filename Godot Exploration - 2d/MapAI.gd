@@ -24,7 +24,7 @@ func reduce_count():
 
 func initialize(position_locations: Array, pathfinding: Pathfinding):
 	self.pathfinding = pathfinding
-	for unit in get_children(): # set pathfinding for all units
+	for unit:Actor in get_children(): # set pathfinding for all units
 		unit.actor_director = self # set unit director to this
 		unit_count += 1
 		unit.ai.pathfinding  = pathfinding

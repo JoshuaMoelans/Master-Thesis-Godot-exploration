@@ -79,7 +79,7 @@ func _physics_process(delta: float) -> void:
 					set_state(previous_state)
 					return
 				elif result["collider"].get_team() == actor.get_team():  # check if same team
-					set_state(previous_state)
+					set_state(previous_state) # TODO this prevents shooting towards team members; add parameter to avoid only sometimes?
 					return
 				printhelper(actor, " engaging rival at position: ", target.global_position)
 				printhelper(actor, " engaging rival from position: ", actor.global_position)
@@ -134,6 +134,7 @@ func printhelper(actor, text, data):
 func initialize(actor, weapon:Weapon, team:int):
 	self.actor = actor
 	self.weapon = weapon
+	weapon.team = team
 	self.team = team
 	weapon.connect("weapon_out_of_ammo", handle_reload)
 	

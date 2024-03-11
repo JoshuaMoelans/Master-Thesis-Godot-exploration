@@ -1,7 +1,7 @@
 extends Node2D
 class_name  Weapon
 
-signal weapon_fired(bullet, location, direction)
+signal weapon_fired(bullet, location, direction, team)
 signal weapon_out_of_ammo()
 signal weapon_ammo(new_ammo_count)
 
@@ -11,12 +11,12 @@ var current_ammo: int = max_ammo : set = set_current_ammo
 var is_reloading: bool = false
 
 @export var Bullet:PackedScene
+@export var team:int
 @onready var end_of_gun = $EndOfGun
 @onready var animation_player = $AnimationPlayer
 @onready var muzzle_flash = $MuzzleFlash
 @onready var audio_player = $AudioStreamPlayer2D
 @onready var attack_cooldown = $AttackCooldown
-
 func _ready():
 	current_ammo = max_ammo
 	muzzle_flash.hide()
@@ -29,7 +29,7 @@ func shoot():
 		animation_player.play("muzzleflash")
 		var bullet_instance = Bullet.instantiate()
 		var direction = (end_of_gun.global_position-global_position).normalized()
-		GlobalSignals.emit_signal("bullet_fired", bullet_instance, end_of_gun.global_position, direction)
+		GlobalSignals.emit_signal("bullet_fired", bullet_instance, end_of_gun.global_position, direction, team)
 		attack_cooldown.start()
 		set_current_ammo(current_ammo-1)
 			
