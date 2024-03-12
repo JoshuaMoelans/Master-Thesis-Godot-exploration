@@ -5,6 +5,7 @@ var Game_Instance_Scene = preload("res://game_instance.tscn")
 
 @export var instance_num = 1;
 @export var visible_games = true;
+@export var flush_state = false;
 
 @onready var GAMES = $GAMES
 @onready var player: Player = $Player
@@ -56,10 +57,16 @@ func setup():
 		var ally_next_positions = ally_map_pts.get_positions()
 		ally_ai.initialize(ally_next_positions, pathfinding)
 		enemy_ai.initialize([], pathfinding)
+		# connect state flush to output handler
+		new_game_instance.game_state.connect("state_flush",flush_game_instance_state)
+		new_game_instance.set_flush_state(flush_state)		
 	
 	gui.set_player(player)
 	#get_node("Game_Instance").queue_free()  # remove first instance for debugging
 
+func flush_game_instance_state(filename, data):
+	if flush_state:
+		outputhandler.write_to_file(filename, data)
 
 func _on_time_out_timeout():
 	outputhandler.write_buffered_data()
