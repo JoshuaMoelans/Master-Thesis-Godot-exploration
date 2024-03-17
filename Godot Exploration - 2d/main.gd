@@ -11,7 +11,7 @@ var Game_Instance_Scene = preload("res://game_instance.tscn")
 @onready var player: Player = $Player
 @onready var gui = $GUI
 @onready var outputhandler = $outputhandler
-
+@onready var openfile = $OpenFile
 # Called when the node enters the scene tree for the first time.
 # using deferred setup due to navigationserver error
 # see https://github.com/godotengine/godot/issues/84677
@@ -26,10 +26,13 @@ func _physics_process(delta):
 			game_instance.visible = not game_instance.visible
 	if Input.is_action_just_pressed("load"):
 		print("loading from file")
+		openfile.popup()
 	if Input.is_action_just_pressed("save"):
 		print("saving to file")
 		for game_instance:GameInstance in GAMES.get_children():
 			game_instance.game_state.state_update(true)
+
+
 
 func setup():
 	await get_tree().physics_frame
@@ -74,4 +77,15 @@ func flush_game_instance_state(filename, data):
 func _on_time_out_timeout():
 	outputhandler.write_buffered_data()
 	outputhandler.write_to_file("main", "games timed out")
-	get_tree().quit()
+	#get_tree().quit()
+
+
+func _on_open_file_files_selected(paths):
+	for path in paths:
+		print(path)
+		var file = FileAccess.open(path, FileAccess.READ)
+		var filename = path.get_file()
+		var content = file.get_as_text()
+		var contentDict = JSON.parse_string(content)
+		print("done handling file") # TODO actually implement loading
+

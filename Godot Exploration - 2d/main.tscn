@@ -11,6 +11,14 @@
 script = ExtResource("1_tkbst")
 instance_num = 9
 
+[node name="OpenFile" type="FileDialog" parent="."]
+title = "Open File(s)"
+position = Vector2i(0, 36)
+size = Vector2i(1000, 600)
+ok_button_text = "Open"
+file_mode = 1
+access = 1
+
 [node name="GAMES" type="Node2D" parent="."]
 
 [node name="Player" parent="." instance=ExtResource("1_cfvfw")]
@@ -43,5 +51,6 @@ script = ExtResource("6_i0u21")
 wait_time = 5.0
 autostart = true
 
+[connection signal="files_selected" from="OpenFile" to="." method="_on_open_file_files_selected"]
 [connection signal="timeout" from="TimeOut" to="." method="_on_time_out_timeout"]
 [connection signal="timeout" from="outputhandler/WriteTimer" to="outputhandler" method="_on_write_timer_timeout"]
