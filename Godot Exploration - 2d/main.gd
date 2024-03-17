@@ -19,11 +19,16 @@ func _ready():
 	set_physics_process(false)
 	setup()
 	
-
 func _physics_process(delta):
 	if Input.is_action_just_pressed("toggle_visibility"):
 		for game_instance in GAMES.get_children():
 			game_instance.visible = not game_instance.visible
+	if Input.is_action_just_pressed("load"):
+		print("loading from file")
+	if Input.is_action_just_pressed("save"):
+		print("saving to file")
+		for game_instance:GameInstance in GAMES.get_children():
+			game_instance.game_state.state_update(true)
 
 func setup():
 	randomize()
@@ -59,14 +64,12 @@ func setup():
 		enemy_ai.initialize([], pathfinding)
 		# connect state flush to output handler
 		new_game_instance.game_state.connect("state_flush",flush_game_instance_state)
-		new_game_instance.set_flush_state(flush_state)		
+		new_game_instance.set_flush_state(flush_state)
 	
 	gui.set_player(player)
-	#get_node("Game_Instance").queue_free()  # remove first instance for debugging
 
 func flush_game_instance_state(filename, data):
-	if flush_state:
-		outputhandler.write_to_file(filename, data)
+	outputhandler.write_to_file(filename, data)
 
 func _on_time_out_timeout():
 	outputhandler.write_buffered_data()

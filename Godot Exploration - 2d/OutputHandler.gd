@@ -1,6 +1,7 @@
 extends Node
 class_name OutputHandler
 
+@export var write_buffered_game_data = false
 var gamesOutput = [] # list containing string output for games
 var gamesOutputFileNames = []
 # Called when the node enters the scene tree for the first time.
@@ -24,10 +25,12 @@ func write_to_file(filename, data):
 	if not FileAccess.file_exists("user://logs/" + filename + ".txt"):
 		var file = FileAccess.open("user://logs/" + filename + ".txt", FileAccess.WRITE) # should create empty file
 		file.store_string(data)
+		file.close()
 	else:
 		var file = FileAccess.open("user://logs/" + filename + ".txt", FileAccess.READ_WRITE) # should append
 		file.seek_end()
 		file.store_string(data)
+		file.close()
 
 # writes the given data to the given instance IDs file
 func write_to_instance_file(i:int, data:String):
@@ -52,5 +55,6 @@ func write_buffered_data():
 
 # periodically triggers a write of all buffered data
 func _on_write_timer_timeout():
-	write_buffered_data()
+	if write_buffered_game_data:
+		write_buffered_data()
 
