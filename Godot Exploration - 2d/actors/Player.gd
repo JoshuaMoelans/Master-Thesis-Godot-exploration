@@ -29,7 +29,8 @@ func _physics_process(delta):
 	if Input.is_action_pressed("up"):
 		movement_dir.y = -1
 	if Input.is_action_pressed("down"):
-		movement_dir.y = 1
+		if not Input.is_action_pressed("save"): # avoid moving if trying to save
+			movement_dir.y = 1
 	if Input.is_action_pressed("reset_scene"):
 		get_tree().reload_current_scene()
 		

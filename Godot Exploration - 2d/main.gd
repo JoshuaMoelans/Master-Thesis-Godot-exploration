@@ -16,6 +16,7 @@ var Game_Instance_Scene = preload("res://game_instance.tscn")
 # using deferred setup due to navigationserver error
 # see https://github.com/godotengine/godot/issues/84677
 func _ready():
+	seed(0) # doesnt work!
 	set_physics_process(false)
 	setup()
 	
@@ -31,7 +32,6 @@ func _physics_process(delta):
 			game_instance.game_state.state_update(true)
 
 func setup():
-	randomize()
 	await get_tree().physics_frame
 	set_physics_process(true)
 	var grid_dim:int = ceil(sqrt(instance_num))
