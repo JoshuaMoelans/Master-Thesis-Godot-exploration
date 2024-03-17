@@ -42,6 +42,7 @@ func handle_reload():
 	printhelper(actor, " reloading weapon", "")
 	weapon.start_reload()
 	update_AI_ammo(weapon.current_ammo)
+	update_AI_reload()
 
 func get_AI_state():
 	return AI_State
@@ -150,6 +151,7 @@ func init_AI_state():
 	AI_State["goal_position"] = null
 	AI_State["aim_direction"] = null
 	AI_State["state"] = State.PATROL
+	AI_State["reload_count"] = 0
 
 signal flush_AI_state_sgn (unit_name, newstate)
 
@@ -160,8 +162,8 @@ func update_AI_state(newstate):
 	AI_State["state"] = newstate
 	flush_AI_state()
 	
-func update_AI_health():
-	pass # TODO figure out if we can do this here or need to do it one layer higher (Actor.gd)
+func update_AI_health(newhealth):
+	AI_State["health"] = newhealth # if <=0 in State we know unit is dead
 	
 func update_AI_path(newpath):
 	AI_State["path"] = newpath
@@ -169,6 +171,10 @@ func update_AI_path(newpath):
 	
 func update_AI_ammo(newammo):
 	AI_State["ammo"] = newammo
+	flush_AI_state()
+
+func update_AI_reload():
+	AI_State["reload_count"] += 1
 	flush_AI_state()
 
 func update_AI_aim(aimdir):

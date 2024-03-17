@@ -18,6 +18,7 @@ func _ready() -> void:
 func handle_hit(by_team:int):
 	var dmg = 20 # TODO maybe make parameter of Bullet?
 	health.health -= dmg
+	ai.update_AI_health(health.health)
 	# helper function; takes in actor, text and single piece of data to print
 	# gets current actor scope (container and instance) for output
 	var container = self.get_parent()
