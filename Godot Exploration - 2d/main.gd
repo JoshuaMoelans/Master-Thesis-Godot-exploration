@@ -25,11 +25,9 @@ func _physics_process(delta):
 		for game_instance in GAMES.get_children():
 			game_instance.visible = not game_instance.visible
 	if Input.is_action_just_pressed("load"):
-		print("loading from file") # TODO what if loading and objects don't exist anymore? maybe reset first?
-		openfile.popup()
 		GAMES.process_mode = Node.PROCESS_MODE_DISABLED
+		openfile.popup()
 	if Input.is_action_just_pressed("save"):
-		print("saving to file")
 		for game_instance:GameInstance in GAMES.get_children():
 			game_instance.game_state.state_update(true)
 
@@ -92,3 +90,15 @@ func _on_open_file_files_selected(paths):
 		var game_instance:GameInstance = all_games[instance_id]
 		game_instance.load_game_state(contentDict) # load from contentDict
 	GAMES.process_mode = Node.PROCESS_MODE_INHERIT
+
+
+func _on_open_file_canceled():
+	GAMES.process_mode = Node.PROCESS_MODE_INHERIT
+
+
+func _on_open_file_confirmed():
+	# TODO figure out why this doesn't work? (loading doesnt actually happen)
+	#for g in GAMES.get_children():
+		#g.queue_free() # TODO discuss choice of resetting all non-given instances?
+	#setup() # call setup to 'reload' all instances by default
+	pass
