@@ -48,6 +48,7 @@ func get_AI_state():
 	return AI_State
 
 func _physics_process(delta: float) -> void:
+	AI_State["position"] = global_position # TODO also flush whenever state change/checkpoint/patrol point?
 	path_line.global_rotation = 0 # reset pathing line rotation
 	match current_state:
 		State.PATROL:
@@ -144,13 +145,14 @@ func printhelper(actor, text, data):
 
 func init_AI_state():
 	AI_State["id"] = actor.get_name()	
-	AI_State["position"] = actor.global_position
+	AI_State["position"] = actor.global_position # TODO check when to update?
 	AI_State["health"] = actor.health.health
 	AI_State["ammo"] = weapon.current_ammo
 	AI_State["path"] = []
 	AI_State["goal_position"] = null
 	AI_State["aim_direction"] = null
 	AI_State["state"] = State.PATROL
+	AI_State["previous_state"] = State.PATROL
 	AI_State["reload_count"] = 0
 
 signal flush_AI_state_sgn (unit_name, newstate)
@@ -179,6 +181,10 @@ func update_AI_reload():
 
 func update_AI_aim(aimdir):
 	AI_State["aim_direction"] = aimdir
+	flush_AI_state()
+
+func update_AI_prev_state(previous):
+	AI_State["previous_state"] = previous
 	flush_AI_state()
 
 func update_AI_goal(newgoal):
@@ -210,6 +216,7 @@ func set_weapon(weapon: Weapon):
 
 func set_state(new_state: int):
 	previous_state = current_state
+	update_AI_prev_state(previous_state)
 	if new_state == current_state:
 		return
 	current_state = new_state

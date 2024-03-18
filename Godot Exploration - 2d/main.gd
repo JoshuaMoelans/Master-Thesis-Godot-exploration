@@ -27,6 +27,7 @@ func _physics_process(delta):
 	if Input.is_action_just_pressed("load"):
 		print("loading from file")
 		openfile.popup()
+		GAMES.process_mode = Node.PROCESS_MODE_DISABLED
 	if Input.is_action_just_pressed("save"):
 		print("saving to file")
 		for game_instance:GameInstance in GAMES.get_children():
@@ -81,11 +82,13 @@ func _on_time_out_timeout():
 
 
 func _on_open_file_files_selected(paths):
+	var all_games = GAMES.get_children()
 	for path in paths:
-		print(path)
 		var file = FileAccess.open(path, FileAccess.READ)
-		var filename = path.get_file()
+		var filename:String = path.get_file()
+		var instance_id = int(filename.split("_")[2])
 		var content = file.get_as_text()
 		var contentDict = JSON.parse_string(content)
-		print("done handling file") # TODO actually implement loading
-
+		var game_instance:GameInstance = all_games[instance_id]
+		game_instance.load_game_state(contentDict) # load from contentDict
+	GAMES.process_mode = Node.PROCESS_MODE_INHERIT

@@ -39,6 +39,37 @@ func stop_instance(allies_won:bool):
 func _process(delta):
 	game_state.update_time += delta
 
+# constructs named dict of id:node for given list of child nodes
+func construct_name_dict(child_list):
+	var out = {}
+	for c:Node in child_list:
+		out[c.name] = c
+	return out
+
+func load_game_state(newstate):
+	print("loading game state")
+	# UPDATING ALLIES
+	var allyData = newstate["allies"]
+	var allies = AllyMapDirector.get_children()
+	var allies_map:Dictionary = construct_name_dict(allies)
+	for ally_update in allyData:
+		var ally_id = allyData[ally_update]["id"]
+		if ally_id in allies_map: # checks if ally from load exists
+			var ally:Actor = allies_map[ally_id]
+			ally.set_state(allyData[ally_update])
+	# UPDATING ENEMIES
+	var enemyData = newstate["enemies"]
+	var enemies = EnemyMapDirector.get_children()
+	var enemies_map:Dictionary = construct_name_dict(enemies)
+	for enemy_update in enemyData:
+		var enemy_id = enemyData[enemy_update]["id"]
+		if enemy_id in enemies_map:
+			var enemy:Actor = enemies_map[enemy_id]
+			enemy.set_state(enemyData[enemy_update])
+	# WRITING LOADED STATE AS CHECK
+	game_state.state_update(true, "postload")
+	
+	
 
 # class that gathers data
 # this consists of both the Scoring Metrics:
@@ -66,10 +97,10 @@ class GameState:
 	
 	signal state_flush(filename, data)
 	
-	func state_update(force=false):
+	func state_update(force=false, suffix=""):
 		if force or flush:
 			self.state["timer"] = update_time
-			var filename = game_instance_name + "_" + str(update_time)
+			var filename = game_instance_name + "_" + str(update_time) + suffix
 			state_flush.emit(filename, JSON.stringify(state)) # emit state flush signal TODO every update or only every X?
 		
 	func update_team_damage(team, damage):

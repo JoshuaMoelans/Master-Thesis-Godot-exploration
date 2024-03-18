@@ -3,7 +3,7 @@ class_name Actor
 
 @onready var collision_shape = $CollisionShape2D
 @onready var health = $Health
-@onready var ai = $AI
+@onready var ai:AI = $AI
 @onready var weapon = $Weapon
 @onready var team = $Team
 @export var speed:int = 100
@@ -44,3 +44,28 @@ func has_reached_position(location: Vector2) -> bool:
 
 func get_team() -> int:
 	return team.team
+
+# takes "(x, y)" and returns (x,y) as Vector2 
+func str_to_vec2(input:String):
+	var outputstr = input.erase(0) # remove (
+	outputstr = outputstr.erase(outputstr.length()-1) # remove )
+	var outputlist = outputstr.split(",")
+	return Vector2(float(outputlist[0]),float(outputlist[1]))
+
+func path_str_to_vec(input):
+	var output = []
+	for point in input:
+		output.append(str_to_vec2(point))
+	return output
+
+func set_state(newstate):
+	health.health = newstate["health"]
+	if health.health <= 0: # if we dead, we dead
+		queue_free()
+	ai.weapon.set_current_ammo(newstate["ammo"])
+	ai.next_position = str_to_vec2(newstate["goal_position"])
+	ai.current_path = path_str_to_vec(newstate["path"])
+	global_position = str_to_vec2(newstate["position"])
+	ai.current_state = newstate["state"]
+	ai.AI_State["reload_count"] = newstate["reload_count"]
+	ai.previous_state = newstate["previous_state"]

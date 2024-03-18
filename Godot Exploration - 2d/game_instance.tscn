@@ -2023,13 +2023,13 @@ position = Vector2(1789, 523)
 script = ExtResource("5_m1mjf")
 
 [node name="Ally" parent="AllyMapDirector" instance=ExtResource("6_n7rv6")]
-position = Vector2(132, 216)
+position = Vector2(119, 168)
 
 [node name="Ally2" parent="AllyMapDirector" instance=ExtResource("6_n7rv6")]
-position = Vector2(195, 322)
+position = Vector2(287, 343)
 
 [node name="Ally3" parent="AllyMapDirector" instance=ExtResource("6_n7rv6")]
-position = Vector2(139, 465)
+position = Vector2(30, 608)
 
 [node name="Ally4" parent="AllyMapDirector" instance=ExtResource("6_n7rv6")]
 position = Vector2(-29, 323)
