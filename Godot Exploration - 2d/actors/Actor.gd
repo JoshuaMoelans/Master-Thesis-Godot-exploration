@@ -60,12 +60,21 @@ func path_str_to_vec(input):
 
 func set_state(newstate):
 	health.health = newstate["health"]
+	ai.update_AI_health(health.health)
 	if health.health <= 0: # if we dead, we dead
 		queue_free()
 	ai.weapon.set_current_ammo(newstate["ammo"])
+	ai.update_AI_ammo(newstate["ammo"])
+	ai.initial_locations = path_str_to_vec(newstate["initial_locations"])
+	ai.update_AI_init_locs(ai.initial_locations)
 	ai.next_position = str_to_vec2(newstate["goal_position"])
+	ai.update_AI_goal(ai.next_position)
 	ai.current_path = path_str_to_vec(newstate["path"])
+	ai.update_AI_path(ai.current_path)
 	global_position = str_to_vec2(newstate["position"])
-	ai.current_state = newstate["state"]
+	ai.AI_State["position"] = global_position
+	ai.current_state = newstate["previous_state"]
+	ai.update_AI_prev_state(ai.current_state)
+	ai.set_state(newstate["state"]) # sets previous state to ^ old current
 	ai.AI_State["reload_count"] = newstate["reload_count"]
-	ai.previous_state = newstate["previous_state"]
+	ai.target = newstate["target"] # special case; need to select target object at higher level

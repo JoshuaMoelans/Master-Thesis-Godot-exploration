@@ -126,6 +126,7 @@ func _physics_process(delta: float) -> void:
 				#print("arrived at advance position")
 				if initial_locations.size() != 0:  # if more positions to cover
 					next_position = initial_locations.pop_front()
+					update_AI_init_locs(initial_locations)
 				else:
 					set_state(State.PATROL)
 				path_line.clear_points()
@@ -151,14 +152,24 @@ func init_AI_state():
 	AI_State["path"] = []
 	AI_State["goal_position"] = null
 	AI_State["aim_direction"] = null
+	AI_State["target"] = null	
 	AI_State["state"] = State.PATROL
 	AI_State["previous_state"] = State.PATROL
 	AI_State["reload_count"] = 0
+	AI_State["initial_locations"] = initial_locations
 
 signal flush_AI_state_sgn (unit_name, newstate)
 
 func flush_AI_state():
 	flush_AI_state_sgn.emit(AI_State["id"], AI_State)
+
+func update_AI_target(newtarget_id):
+	AI_State["target"] = newtarget_id
+	flush_AI_state()
+
+func update_AI_init_locs(new_init_locs):
+	AI_State["initial_locations"] = new_init_locs
+	flush_AI_state()
 
 func update_AI_state(newstate):
 	AI_State["state"] = newstate
@@ -237,6 +248,7 @@ func _on_detection_zone_body_entered(body):
 	if body.has_method("get_team") and body.get_team() != team:
 		set_state(State.ENGAGE)
 		target = body
+		update_AI_target(body.name)
 
 
 func _on_detection_zone_body_exited(body):

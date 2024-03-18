@@ -48,23 +48,32 @@ func construct_name_dict(child_list):
 
 func load_game_state(newstate):
 	print("loading game state")
-	# UPDATING ALLIES
 	var allyData = newstate["allies"]
 	var allies = AllyMapDirector.get_children()
 	var allies_map:Dictionary = construct_name_dict(allies)
+	var enemyData = newstate["enemies"]
+	var enemies = EnemyMapDirector.get_children()
+	var enemies_map:Dictionary = construct_name_dict(enemies)
+	# UPDATING ALLIES
 	for ally_update in allyData:
 		var ally_id = allyData[ally_update]["id"]
 		if ally_id in allies_map: # checks if ally from load exists
 			var ally:Actor = allies_map[ally_id]
+			# need to reference target if exists
+			var target = allyData[ally_update]["target"]
+			if target:
+				allyData[ally_update]["target"] = enemies_map[target]
 			ally.set_state(allyData[ally_update])
 	# UPDATING ENEMIES
-	var enemyData = newstate["enemies"]
-	var enemies = EnemyMapDirector.get_children()
-	var enemies_map:Dictionary = construct_name_dict(enemies)
+
 	for enemy_update in enemyData:
 		var enemy_id = enemyData[enemy_update]["id"]
 		if enemy_id in enemies_map:
 			var enemy:Actor = enemies_map[enemy_id]
+			# need to reference target if exists
+			var target = enemyData[enemy_update]["target"]
+			if target:
+				enemyData[enemy_update]["target"] = allies_map[target]
 			enemy.set_state(enemyData[enemy_update])
 	# WRITING LOADED STATE AS CHECK
 	game_state.state_update(true, "postload")

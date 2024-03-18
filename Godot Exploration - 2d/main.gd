@@ -25,7 +25,7 @@ func _physics_process(delta):
 		for game_instance in GAMES.get_children():
 			game_instance.visible = not game_instance.visible
 	if Input.is_action_just_pressed("load"):
-		print("loading from file")
+		print("loading from file") # TODO what if loading and objects don't exist anymore? maybe reset first?
 		openfile.popup()
 		GAMES.process_mode = Node.PROCESS_MODE_DISABLED
 	if Input.is_action_just_pressed("save"):
