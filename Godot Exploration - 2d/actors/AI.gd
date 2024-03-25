@@ -83,6 +83,9 @@ func _physics_process(delta: float) -> void:
 				# use global coordinates, not local to node
 				var query = PhysicsRayQueryParameters2D.create(actor.global_position, target.global_position)
 				var result = space_state.intersect_ray(query)
+				if result.is_empty():
+					set_state(previous_state)
+					return
 				# TODO what if not hittable now, but by ally/enemy movement they get hittable?
 				if not result["collider"].has_method("get_team"):  # check if raycast hits character
 					set_state(previous_state)

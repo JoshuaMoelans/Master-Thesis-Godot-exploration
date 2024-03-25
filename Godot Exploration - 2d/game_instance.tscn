@@ -2021,7 +2021,6 @@ position = Vector2(1789, 523)
 
 [node name="AllyMapDirector" type="Node2D" parent="."]
 script = ExtResource("5_m1mjf")
-position_move_start = null
 
 [node name="Ally" parent="AllyMapDirector" instance=ExtResource("6_n7rv6")]
 position = Vector2(119, 168)
@@ -2038,7 +2037,6 @@ position = Vector2(-29, 323)
 [node name="EnemyMapDirector" type="Node2D" parent="."]
 position = Vector2(661, 0)
 script = ExtResource("5_m1mjf")
-position_move_start = null
 
 [node name="Enemy3" parent="EnemyMapDirector" instance=ExtResource("7_fps2u")]
 position = Vector2(1028, 109)

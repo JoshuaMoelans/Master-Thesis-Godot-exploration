@@ -62,6 +62,7 @@ func setup_instance(i:int):
 	# connect state flush to output handler
 	new_game_instance.game_state.connect("state_flush",flush_game_instance_state)
 	new_game_instance.set_flush_state(flush_state)
+	return new_game_instance
 
 
 func setup():
@@ -89,23 +90,16 @@ func _on_open_file_files_selected(paths):
 		var instance_id = int(filename.split("_")[2])
 		if instance_id >= instance_num:
 			print("ERROR! trying to load instance that doesn't exist")
-			print("\tplease rerun with at least ", instance_id, " instances")
+			print("\tplease rerun with at least ", instance_id+1, " instances")
 			continue # in case we try to load a higher instance then exists
 		var content = file.get_as_text()
 		var contentDict = JSON.parse_string(content)
 		var game_instance:GameInstance = all_games[instance_id]
-		setup_instance(instance_id)
-		game_instance.load_game_state(contentDict) # load from contentDict
+		game_instance.queue_free() # need to REMOVE old instance!
+		var g = setup_instance(instance_id) # and generate a new one
+		g.load_game_state(contentDict) # load from contentDict
 	GAMES.process_mode = Node.PROCESS_MODE_INHERIT
 
 
 func _on_open_file_canceled():
 	GAMES.process_mode = Node.PROCESS_MODE_INHERIT
-
-
-func _on_open_file_confirmed():
-	# TODO figure out why this doesn't work? (loading doesnt actually happen)
-	#for g in GAMES.get_children():
-		#g.queue_free() # TODO discuss choice of resetting all non-given instances?
-	#setup() # call setup to 'reload' all instances by default
-	pass
