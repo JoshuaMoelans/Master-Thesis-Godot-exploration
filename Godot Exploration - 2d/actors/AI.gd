@@ -100,10 +100,10 @@ func _physics_process(delta: float) -> void:
 					update_AI_aim(target.global_position)
 					weapon.shoot()
 					update_AI_ammo(weapon.current_ammo)
-			else:
-				print("Engage state but lacking weapon/target")
-				print("\t weapon is: ",str(weapon))
-				print("\t target is: ",str(target))
+			#else:
+				#print("Engage state but lacking weapon/target")
+				#print("\t weapon is: ",str(weapon))
+				#print("\t target is: ",str(target))
 		State.ADVANCE:
 			if current_path.size() == 0:
 				update_AI_goal(next_position)

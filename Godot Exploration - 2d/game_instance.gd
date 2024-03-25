@@ -75,6 +75,10 @@ func load_game_state(newstate):
 			if target:
 				enemyData[enemy_update]["target"] = allies_map[target]
 			enemy.set_state(enemyData[enemy_update])
+			
+	# UPDATING damage_done AND team_damage
+	game_state.state["damage_done"] = newstate["damage_done"]
+	game_state.state["team_damage"] = newstate["team_damage"]
 	# WRITING LOADED STATE AS CHECK
 	game_state.state_update(true, "postload")
 	

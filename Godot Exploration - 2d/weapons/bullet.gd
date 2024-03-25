@@ -14,7 +14,7 @@ func _ready() -> void:
 
 func _physics_process(delta):
 	if dir != Vector2.ZERO:
-		var velocity = dir * SPEED
+		var velocity = dir * SPEED # TODO make frame independent using delta (fac * delta)
 		global_position += velocity
 
 func set_direction(dir:Vector2):
