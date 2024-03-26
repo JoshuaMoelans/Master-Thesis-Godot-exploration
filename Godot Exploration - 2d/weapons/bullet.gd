@@ -26,6 +26,9 @@ func set_team(team:int):
 func _on_kill_timer_timeout():
 	queue_free()
 
+func get_state():
+	var state = {"SPEED":SPEED, "TEAM": TEAM, "DIR": dir, "POS":global_position}
+	return state
 
 func _on_body_entered(body):
 	if body.has_method("handle_hit"):  # anything that can be hit by a bullet needs this method implemented

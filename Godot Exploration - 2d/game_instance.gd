@@ -5,14 +5,15 @@ var update_time = 0
 
 @export var verbose = false
 @export var id = 0
+@export var Bullet:PackedScene
 var game_state:GameState; # the current game state
 @onready var AllyMapDirector = $AllyMapDirector
 @onready var EnemyMapDirector = $EnemyMapDirector
-
+@onready var BulletManager = $BulletManager
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	game_state = GameState.new()
+	game_state = GameState.new(BulletManager)
 	game_state.game_instance_name = name # used for flushing to file
 	AllyMapDirector.connect("game_over", stop_instance.bind(false))
 	EnemyMapDirector.connect("game_over", stop_instance.bind(true))
@@ -46,6 +47,13 @@ func construct_name_dict(child_list):
 		out[c.name] = c
 	return out
 
+# takes "(x, y)" and returns (x,y) as Vector2 
+func str_to_vec2(input:String):
+	var outputstr = input.erase(0) # remove (
+	outputstr = outputstr.erase(outputstr.length()-1) # remove )
+	var outputlist = outputstr.split(",")
+	return Vector2(float(outputlist[0]),float(outputlist[1]))
+
 func load_game_state(newstate):
 	print("loading game state")
 	var allyData = newstate["allies"]
@@ -65,7 +73,6 @@ func load_game_state(newstate):
 				allyData[ally_update]["target"] = enemies_map[target]
 			ally.set_state(allyData[ally_update])
 	# UPDATING ENEMIES
-
 	for enemy_update in enemyData:
 		var enemy_id = enemyData[enemy_update]["id"]
 		if enemy_id in enemies_map:
@@ -75,10 +82,19 @@ func load_game_state(newstate):
 			if target:
 				enemyData[enemy_update]["target"] = allies_map[target]
 			enemy.set_state(enemyData[enemy_update])
-			
 	# UPDATING damage_done AND team_damage
 	game_state.state["damage_done"] = newstate["damage_done"]
 	game_state.state["team_damage"] = newstate["team_damage"]
+	# UPDATING BULLETS
+	for b_ind in newstate["bullets"]:
+		var bulletData = newstate["bullets"][b_ind]
+		var pos_str = bulletData["POS"]
+		var pos = str_to_vec2(pos_str)
+		var dir_str = bulletData["DIR"]
+		var dir = str_to_vec2(dir_str)
+		var team = bulletData["TEAM"]
+		var newbullet = Bullet.instantiate()
+		BulletManager.handle_bullet_spawned(newbullet, pos, dir, team)
 	# WRITING LOADED STATE AS CHECK
 	game_state.state_update(true, "postload")
 	
@@ -95,12 +111,15 @@ class GameState:
 	var state = {};
 	var teams = ["allies", "enemies"]
 	var game_instance_name = ""
-	func _init():
+	var BulletManager = null
+	func _init(BulletManager):
 		state = {} # state is dictionary of 'interesting' values
 		state["team_damage"] = {"allies": 0, "enemies": 0}  # damage done within team (friendly fire)
 		state["damage_done"] = {"allies": 0, "enemies": 0}  # damage done to other team
 		state["allies"] = {}
 		state["enemies"] = {}
+		state["bullets"] = {}
+		self.BulletManager = BulletManager
 	
 	func add_ally(ally_state):
 		self.state["allies"][ally_state.id] = ally_state
@@ -111,6 +130,13 @@ class GameState:
 	signal state_flush(filename, data)
 	
 	func state_update(force=false, suffix=""):
+		if force:
+			# get bullet data
+			state["bullets"] = {}
+			var b_ind = 0
+			for b:Bullet in self.BulletManager.get_children():
+				state["bullets"][b_ind] = b.get_state()
+				b_ind += 1
 		if force or flush:
 			self.state["timer"] = update_time
 			var filename = game_instance_name + "_" + str(update_time) + suffix
