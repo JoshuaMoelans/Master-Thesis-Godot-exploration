@@ -48,7 +48,6 @@ func get_AI_state():
 	return AI_State
 
 func _physics_process(delta: float) -> void:
-	_draw()	
 	var deltaspeed = delta * 50 # currently arbitrary choice of factor
 	AI_State["position"] = global_position # TODO also flush whenever state change/checkpoint/patrol point?
 	path_line.global_rotation = 0 # reset pathing line rotation
@@ -283,9 +282,4 @@ func _on_patrol_timer_timeout():
 		patrol_location = generate_patrol_location() #regenerate if not clear
 	printhelper(actor, " set new PATROL destination: ", patrol_location)
 	patrol_location_reached = false
-	# TODO debug by drawing circle at location;
-	# currently circles are attached to actor :/
-	
-func _draw():
-	actor.draw_circle(global_position-patrol_location, 15.0, Color.AQUA)
-	
+	actor.get_parent().add_draw_location(patrol_location)
