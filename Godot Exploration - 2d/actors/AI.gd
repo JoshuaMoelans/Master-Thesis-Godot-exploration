@@ -48,6 +48,7 @@ func get_AI_state():
 	return AI_State
 
 func _physics_process(delta: float) -> void:
+	_draw()	
 	var deltaspeed = delta * 50 # currently arbitrary choice of factor
 	AI_State["position"] = global_position # TODO also flush whenever state change/checkpoint/patrol point?
 	path_line.global_rotation = 0 # reset pathing line rotation
@@ -261,10 +262,9 @@ func _on_detection_zone_body_exited(body):
 		update_AI_aim(null)
 		target = null  # TODO what if target dies, does this trigger?
 
-
-func _on_patrol_timer_timeout():
-	var patrol_range = 100
-	var min_patrol_range = 35
+func generate_patrol_location():
+	var patrol_range = 125
+	var min_patrol_range = 50
 	var random_x = randf_range(-patrol_range, patrol_range)
 	if random_x > 0:
 		clamp(random_x, min_patrol_range, patrol_range)
@@ -275,7 +275,17 @@ func _on_patrol_timer_timeout():
 		clamp(random_y, min_patrol_range, patrol_range)
 	else:
 		clamp(random_y, -patrol_range, -min_patrol_range)
-	patrol_location = Vector2(random_x, random_y) + origin
+	return Vector2(random_x, random_y) + origin
+
+func _on_patrol_timer_timeout():
+	patrol_location = generate_patrol_location()
+	while not pathfinding.check_position_clear(patrol_location):
+		patrol_location = generate_patrol_location() #regenerate if not clear
 	printhelper(actor, " set new PATROL destination: ", patrol_location)
-	# TODO add check whether patrol location is reachable
 	patrol_location_reached = false
+	# TODO debug by drawing circle at location;
+	# currently circles are attached to actor :/
+	
+func _draw():
+	actor.draw_circle(global_position-patrol_location, 15.0, Color.AQUA)
+	

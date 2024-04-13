@@ -10,7 +10,6 @@
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_tkbst")
-instance_num = 16
 
 [node name="OpenFile" type="FileDialog" parent="."]
 title = "Open File(s)"
@@ -42,6 +41,7 @@ text = "FPS: 42"
 script = ExtResource("5_ivfvg")
 
 [node name="instanceUI" type="TextEdit" parent="FPS"]
+visible = false
 offset_left = 510.0
 offset_top = 309.0
 offset_right = 675.0
