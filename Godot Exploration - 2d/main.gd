@@ -12,6 +12,7 @@ var Game_Instance_Scene = preload("res://game_instance.tscn")
 @onready var gui = $GUI
 @onready var outputhandler = $outputhandler
 @onready var openfile = $OpenFile
+@onready var instanceUI = $FPS/instanceUI
 # Called when the node enters the scene tree for the first time.
 # using deferred setup due to navigationserver error
 # see https://github.com/godotengine/godot/issues/84677
@@ -30,6 +31,8 @@ func _physics_process(delta):
 	if Input.is_action_just_pressed("save"):
 		for game_instance:GameInstance in GAMES.get_children():
 			game_instance.game_state.state_update(true)
+	if Input.is_action_pressed("set_instances"):
+		instanceUI.visible = true
 
 func setup_instance(i:int):
 	var grid_dim:int = ceil(sqrt(instance_num))
@@ -83,7 +86,6 @@ func _on_time_out_timeout():
 
 
 func _on_open_file_files_selected(paths):
-	var all_games = GAMES.get_children()
 	for path in paths:
 		var file = FileAccess.open(path, FileAccess.READ)
 		var filename:String = path.get_file()
@@ -92,14 +94,25 @@ func _on_open_file_files_selected(paths):
 			print("ERROR! trying to load instance that doesn't exist")
 			print("\tplease rerun with at least ", instance_id+1, " instances")
 			continue # in case we try to load a higher instance then exists
+		remove_game_instance(instance_id)
 		var content = file.get_as_text()
 		var contentDict = JSON.parse_string(content)
-		var game_instance:GameInstance = all_games[instance_id]
-		game_instance.queue_free() # need to REMOVE old instance!
 		var g = setup_instance(instance_id) # and generate a new one
 		g.load_game_state(contentDict) # load from contentDict
 	GAMES.process_mode = Node.PROCESS_MODE_INHERIT
 
+func remove_game_instance(i):
+	var all_games = GAMES.get_children()
+	var game_instance:GameInstance = all_games[i]
+	game_instance.queue_free() # need to REMOVE old instance!
 
 func _on_open_file_canceled():
 	GAMES.process_mode = Node.PROCESS_MODE_INHERIT
+
+
+func _on_instance_ui_reset_with_instances(count):
+	for i in range(instance_num):
+		remove_game_instance(i)
+	instance_num = count
+	for i in range(instance_num):
+		setup_instance(i)

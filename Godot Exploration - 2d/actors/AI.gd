@@ -48,6 +48,7 @@ func get_AI_state():
 	return AI_State
 
 func _physics_process(delta: float) -> void:
+	var deltaspeed = delta * 50 # currently arbitrary choice of factor
 	AI_State["position"] = global_position # TODO also flush whenever state change/checkpoint/patrol point?
 	path_line.global_rotation = 0 # reset pathing line rotation
 	match current_state:
@@ -60,7 +61,7 @@ func _physics_process(delta: float) -> void:
 				var path = current_path
 				update_AI_path(current_path)
 				if path.size() > 1:
-					actor.velocity = actor.velocity_toward(path[1])
+					actor.velocity = deltaspeed * actor.velocity_toward(path[1])
 					actor.move_and_slide()
 					actor.rotate_toward(path[1])
 					set_path_line(path)
@@ -114,7 +115,7 @@ func _physics_process(delta: float) -> void:
 			var path = current_path
 			update_AI_path(current_path)
 			if path.size() > 1:
-				actor.velocity = actor.velocity_toward(path[1])
+				actor.velocity = deltaspeed * actor.velocity_toward(path[1])
 				actor.move_and_slide()
 				actor.rotate_toward(path[1])
 				set_path_line(path)

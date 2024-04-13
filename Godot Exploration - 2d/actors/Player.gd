@@ -32,10 +32,10 @@ func _physics_process(delta):
 		if not Input.is_action_pressed("save"): # avoid moving if trying to save
 			movement_dir.y = 1
 	if Input.is_action_pressed("reset_scene"):
-		get_tree().reload_current_scene()
+		get_tree().reload_current_scene()		
 		
 	movement_dir = movement_dir.normalized()  # make sure speed is normalized
-	velocity = movement_dir*SPEED
+	velocity = movement_dir*SPEED * delta * 50
 
 	move_and_slide()
 	look_at(get_global_mouse_position())
