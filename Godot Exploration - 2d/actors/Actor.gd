@@ -16,6 +16,8 @@ func _ready() -> void:
 	ai.initialize(self, weapon.get_child(0), team.team)
 
 func handle_hit(by_team:int):
+	# set make 'aware' of hit by expanding CollisionShape2D range
+	ai.set_vision_range(1.2)
 	var dmg = 20 # TODO maybe make parameter of Bullet?
 	health.health -= dmg
 	ai.update_AI_health(health.health)

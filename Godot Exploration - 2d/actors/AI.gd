@@ -36,6 +36,7 @@ var AI_State = {} # similar state structure for all agents
 
 # ADVANCE STATE
 var next_position: Vector2 = Vector2.ZERO
+var vision_shape: CollisionShape2D = null
 
 func _ready():
 	path_line.visible = should_draw_path_line
@@ -106,8 +107,10 @@ func _physics_process(delta: float) -> void:
 					update_AI_aim(target.global_position)
 					weapon.shoot()
 					update_AI_ammo(weapon.current_ammo)
-			#else:
-				#print("Engage state but lacking weapon/target")
+			else:
+				print("Engage state but lacking weapon/target")
+				print("going back to previous state: ", previous_state)
+				set_state(previous_state) # return to previous state
 				#print("\t weapon is: ",str(weapon))
 				#print("\t target is: ",str(target))
 		State.ADVANCE:
@@ -232,10 +235,12 @@ func set_weapon(weapon: Weapon):
 	self.weapon = weapon
 
 func set_state(new_state: int):
+	if current_state == new_state:
+		return # early exit if no change needed
 	previous_state = current_state
+	if previous_state == State.ENGAGE:
+		set_vision_range(1.0) # if we were engageing, return to old vision range
 	update_AI_prev_state(previous_state)
-	if new_state == current_state:
-		return
 	current_state = new_state
 	printhelper(actor, " entering state ", State.keys()[new_state])
 	if new_state == State.PATROL:
@@ -256,6 +261,8 @@ func _on_detection_zone_body_entered(body):
 		target = body
 		update_AI_target(body.name)
 
+func set_vision_range(size):
+	self.scale = Vector2(size, size) # scale is vision range
 
 func _on_detection_zone_body_exited(body):
 	if target and body == target:

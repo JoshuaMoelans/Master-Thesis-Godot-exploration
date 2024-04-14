@@ -19,4 +19,3 @@ func check_position_clear(goal: Vector2) -> bool:
 	if tiledata0m.get_collision_polygons_count(0) > 0:
 		return false
 	return true
-	
