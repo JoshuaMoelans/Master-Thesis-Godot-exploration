@@ -111,6 +111,9 @@ func _on_open_file_canceled():
 
 
 func _on_instance_ui_reset_with_instances(count):
+	if count > instance_num:
+		print("WARNING! unexpected behaviour if upscaling...")
+	outputhandler.init(count)
 	for i in range(instance_num):
 		remove_game_instance(i)
 	instance_num = count
