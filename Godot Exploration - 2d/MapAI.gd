@@ -56,7 +56,8 @@ func assign_next_position(base_location):
 		ai.set_state(AI.State.ADVANCE)
 
 func _physics_process(delta):
-	_draw()
+	pass
+	queue_redraw()
 
 var draw_locations = []
 
@@ -65,9 +66,5 @@ func add_draw_location(location):
 	print(location)
 
 func _draw():
-	draw_circle(Vector2.ZERO, 15, Color.AQUA)
-	draw_circle(Vector2(1300,200), 15, Color.HOT_PINK)
-	draw_circle(Vector2(140,220), 15, Color.HOT_PINK)
-	if not draw_locations.is_empty():
-		for draw_location in draw_locations:
-			draw_circle(draw_location, 15, Color.CRIMSON) # TODO why no draw?
+	for draw_location in draw_locations: 
+		draw_circle(draw_location, 15, Color.HOT_PINK)

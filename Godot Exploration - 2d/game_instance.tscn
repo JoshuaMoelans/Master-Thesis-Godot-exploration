@@ -2037,23 +2037,22 @@ position = Vector2(30, 608)
 position = Vector2(-29, 323)
 
 [node name="EnemyMapDirector" type="Node2D" parent="."]
-position = Vector2(661, 0)
 script = ExtResource("5_m1mjf")
 
 [node name="Enemy3" parent="EnemyMapDirector" instance=ExtResource("7_fps2u")]
-position = Vector2(1028, 109)
+position = Vector2(1741, 117)
 rotation = 3.13175
 
 [node name="Enemy" parent="EnemyMapDirector" instance=ExtResource("7_fps2u")]
-position = Vector2(906, 332)
+position = Vector2(1619, 340)
 rotation = 3.13175
 
 [node name="Enemy2" parent="EnemyMapDirector" instance=ExtResource("7_fps2u")]
-position = Vector2(1010, 564)
+position = Vector2(1723, 572)
 rotation = 3.13175
 
 [node name="Enemy4" parent="EnemyMapDirector" instance=ExtResource("7_fps2u")]
-position = Vector2(710, 303)
+position = Vector2(1423, 311)
 rotation = 3.13175
 
 [node name="Pathfinding" parent="." instance=ExtResource("8_tkwnx")]

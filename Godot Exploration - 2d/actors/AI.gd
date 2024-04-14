@@ -30,6 +30,8 @@ var origin: Vector2 = Vector2.ZERO  # default position
 var patrol_location: Vector2 = Vector2.ZERO
 var patrol_location_reached: bool = false
 
+var goal_margin = 25 # margin to reach their goal
+
 var AI_State = {} # similar state structure for all agents
 
 # ADVANCE STATE
@@ -70,7 +72,7 @@ func _physics_process(delta: float) -> void:
 						current_path.pop_front()  # remove path steps one by one when reaching point
 				# keep the line below to avoid 'clumping up' of units.
 				# TODO could use tutorial 21.14:30 to do similar 'get random position'
-				if global_position.distance_to(patrol_location) < 5:
+				if global_position.distance_to(patrol_location) < goal_margin: # goal_margin to avoid getting stuck
 					printhelper(actor, " reached PATROL location: ", patrol_location)
 					patrol_location_reached = true
 					actor.velocity = Vector2.ZERO
@@ -124,7 +126,7 @@ func _physics_process(delta: float) -> void:
 					current_path.pop_front()  # remove path steps one by one when reaching point
 			# keep the line below to avoid 'clumping up' of units.
 			# TODO maybe add slight randomization on goal position?
-			if actor.global_position.distance_to(next_position) < 50:
+			if actor.global_position.distance_to(next_position) < goal_margin:
 				printhelper(actor, " reached next ADVANCE position: ", next_position)
 				current_path = []
 				#print("arrived at advance position")
@@ -262,8 +264,8 @@ func _on_detection_zone_body_exited(body):
 		target = null  # TODO what if target dies, does this trigger?
 
 func generate_patrol_location():
-	var patrol_range = 125
-	var min_patrol_range = 50
+	var patrol_range = 150
+	var min_patrol_range = 75
 	var random_x = randf_range(-patrol_range, patrol_range)
 	if random_x > 0:
 		clamp(random_x, min_patrol_range, patrol_range)
@@ -282,4 +284,4 @@ func _on_patrol_timer_timeout():
 		patrol_location = generate_patrol_location() #regenerate if not clear
 	printhelper(actor, " set new PATROL destination: ", patrol_location)
 	patrol_location_reached = false
-	actor.get_parent().add_draw_location(patrol_location)
+	#actor.get_parent().add_draw_location(patrol_location) # debug drawing
