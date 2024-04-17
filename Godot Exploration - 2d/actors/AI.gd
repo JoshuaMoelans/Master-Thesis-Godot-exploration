@@ -244,7 +244,7 @@ func set_state(new_state: int):
 	current_state = new_state
 	printhelper(actor, " entering state ", State.keys()[new_state])
 	if new_state == State.PATROL:
-		patrol_timer.start()
+		patrol_timer.autostart = true
 		origin = global_position
 		patrol_location_reached = true
 	elif new_state == State.ADVANCE:
