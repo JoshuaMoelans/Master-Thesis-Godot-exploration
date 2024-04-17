@@ -54,17 +54,3 @@ func assign_next_position(base_location):
 		var ai :AI= unit.ai
 		ai.next_position = Vector2(randx, randy)
 		ai.set_state(AI.State.ADVANCE)
-
-func _physics_process(delta):
-	pass
-	queue_redraw()
-
-var draw_locations = []
-
-func add_draw_location(location):
-	draw_locations.append(location)
-	print(location)
-
-func _draw():
-	for draw_location in draw_locations: 
-		draw_circle(draw_location, 15, Color.HOT_PINK)

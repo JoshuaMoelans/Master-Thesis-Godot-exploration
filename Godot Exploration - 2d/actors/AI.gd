@@ -291,4 +291,4 @@ func _on_patrol_timer_timeout():
 		patrol_location = generate_patrol_location() #regenerate if not clear
 	printhelper(actor, " set new PATROL destination: ", patrol_location)
 	patrol_location_reached = false
-	#actor.get_parent().add_draw_location(patrol_location) # debug drawing
+
