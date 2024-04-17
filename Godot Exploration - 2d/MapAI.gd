@@ -10,6 +10,7 @@ enum PositionMoveOrder {
 # allows communication of going to 'engage' up to X units away (closest to furthest)
 # TODO might need to check for line-of-sight to target first?
 @export var communication_count : int = 1
+@export var communication_delay : float = 1.5 # takes 1.5s before notifying
 
 var position_locations: Array = []
 var current_position_index = 0
@@ -30,10 +31,17 @@ func sort_array_on_distance(a, b):
 		return false
 
 func notify_others(unit_under_attack:Actor, unit_to_attack:Actor):
+	# timeout has to happen first, else unit(s) might have been killed already
+	await get_tree().create_timer(communication_delay).timeout 
+	var preconditions:bool = (
+		(unit_under_attack != null) and
+		(unit_to_attack  != null) and
+		(get_child_count() > 1) and
+		(communication_count > 0))
+	if not preconditions:
+		return
 	# grab the position of the unit
 	var unit_position:Vector2 = unit_under_attack.global_position
-	if (not unit_to_attack) or (get_child_count() <= 1) or (communication_count == 0):
-		return # early return if no others left or communicate engage is disabled
 	# grab all other units
 	var units: Array = []
 	for unit:Actor in get_children():
