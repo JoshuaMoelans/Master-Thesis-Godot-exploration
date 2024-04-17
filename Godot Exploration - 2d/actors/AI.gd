@@ -255,11 +255,17 @@ func set_state(new_state: int):
 func get_state() -> int:
 	return current_state
 
+signal organic_engage(unit, target)
+
 func _on_detection_zone_body_entered(body):
 	if body.has_method("get_team") and body.get_team() != team:
-		set_state(State.ENGAGE)
-		target = body
-		update_AI_target(body.name)
+		organic_engage.emit(get_parent(), body) # signal up
+		engage_target(body)
+
+func engage_target(target):
+	set_state(State.ENGAGE)
+	self.target = target
+	update_AI_target(target.name)
 
 func set_vision_range(size):
 	self.scale = Vector2(size, size) # scale is vision range

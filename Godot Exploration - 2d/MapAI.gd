@@ -7,6 +7,10 @@ enum PositionMoveOrder {
 }
 
 @export var position_move_start : PositionMoveOrder
+# allows communication of going to 'engage' up to X units away (closest to furthest)
+# TODO might need to check for line-of-sight to target first?
+@export var communication_count : int = 1
+
 var position_locations: Array = []
 var current_position_index = 0
 var pathfinding: Pathfinding
@@ -19,6 +23,31 @@ func reduce_count():
 		print("All units died in " + self.get_name())
 		game_over.emit()
 
+func sort_array_on_distance(a, b):
+	if a["dist"] < b["dist"]:
+		return true
+	else:
+		return false
+
+func notify_others(unit_under_attack:Actor, unit_to_attack:Actor):
+	# grab the position of the unit
+	var unit_position:Vector2 = unit_under_attack.global_position
+	if (not unit_to_attack) or (get_child_count() <= 1) or (communication_count == 0):
+		return # early return if no others left or communicate engage is disabled
+	# grab all other units
+	var units: Array = []
+	for unit:Actor in get_children():
+		if unit != unit_under_attack:
+			var unit_dist = abs(unit_position.distance_to(unit.global_position))
+			var unit_entry = {"unit": unit, "dist": unit_dist} 
+			units.append(unit_entry)
+	units.sort_custom(sort_array_on_distance) # sort on distance
+	for i in range(communication_count):
+		units[i]["unit"].trigger_attack(unit_to_attack) # from closest to furthest, trigger attack
+
+func _ready():
+	for unit:Actor in get_children():
+		unit.ai.connect("organic_engage",notify_others)
 
 func initialize(position_locations: Array, pathfinding: Pathfinding):
 	self.pathfinding = pathfinding
