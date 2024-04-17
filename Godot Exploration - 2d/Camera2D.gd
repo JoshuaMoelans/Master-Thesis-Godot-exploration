@@ -2,8 +2,8 @@ extends Camera2D
 
 var player_ref
 
-var zoomSpeed = 10
-var zoomStep = 0.1
+var zoomSpeed = 5
+var zoomStep = 0.01
 
 var zoomMin = 0.03
 var zoomMax = 1.5
