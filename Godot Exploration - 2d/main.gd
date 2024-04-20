@@ -13,10 +13,25 @@ var Game_Instance_Scene = preload("res://game_instance.tscn")
 @onready var outputhandler = $outputhandler
 @onready var openfile = $OpenFile
 @onready var instanceUI = $FPS/instanceUI
+
+func parse_CLA():
+	var arguments = {}
+	for argument in OS.get_cmdline_args():
+		if argument.find("=") > -1:
+			var key_value = argument.split("=")
+			arguments[key_value[0].lstrip("-")] = key_value[1]
+	return arguments
+
 # Called when the node enters the scene tree for the first time.
 # using deferred setup due to navigationserver error
 # see https://github.com/godotengine/godot/issues/84677
 func _ready():
+	var args = parse_CLA()
+	if args.has("ngames"):
+		if args["ngames"].is_valid_int():
+			instance_num = int(args["ngames"])
+		else:
+			print("ERROR! non-integer amount of ngames parameter")
 	seed(0) # doesnt work!
 	set_physics_process(false)
 	setup()
