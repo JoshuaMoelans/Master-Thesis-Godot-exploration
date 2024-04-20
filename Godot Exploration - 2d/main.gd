@@ -22,16 +22,24 @@ func parse_CLA():
 			arguments[key_value[0].lstrip("-")] = key_value[1]
 	return arguments
 
-# Called when the node enters the scene tree for the first time.
-# using deferred setup due to navigationserver error
-# see https://github.com/godotengine/godot/issues/84677
-func _ready():
+func set_CLA_vars():
 	var args = parse_CLA()
 	if args.has("ngames"):
 		if args["ngames"].is_valid_int():
 			instance_num = int(args["ngames"])
 		else:
 			print("ERROR! non-integer amount of ngames parameter")
+	if args.has("visible"):
+		if args["visible"] == "true":
+			visible_games = true
+		else:
+			visible_games = false
+
+# Called when the node enters the scene tree for the first time.
+# using deferred setup due to navigationserver error
+# see https://github.com/godotengine/godot/issues/84677
+func _ready():
+	set_CLA_vars()
 	seed(0) # doesnt work!
 	set_physics_process(false)
 	setup()
