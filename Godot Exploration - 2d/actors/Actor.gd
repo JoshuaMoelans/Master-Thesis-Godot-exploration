@@ -19,6 +19,7 @@ func trigger_attack(target):
 	# tries to trigger this unit to engage with given target
 	# TODO improve by first checking if target is even reachable from here;
 	# if not, maybe change objective to get close to original unit?
+	# TODO check behaviour post-trigger (sometimes seems to get stuck)
 	ai.engage_target(target)
 	ai.set_state(ai.State.ENGAGE)
 

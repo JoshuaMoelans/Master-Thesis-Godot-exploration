@@ -26,7 +26,7 @@ mouse_cursor/custom_image="res://assets/cursor.png"
 
 [editor]
 
-run/main_run_args="-ngames=9 visible=false"
+run/main_run_args="-ngames=4 visible=true communication_count=4"
 
 [importer_defaults]
 

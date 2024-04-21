@@ -32,7 +32,8 @@ func sort_array_on_distance(a, b):
 
 func notify_others(unit_under_attack:Actor, unit_to_attack:Actor):
 	# timeout has to happen first, else unit(s) might have been killed already
-	await get_tree().create_timer(communication_delay).timeout 
+	 # TODO timeout between notifications? Based on distance?
+	await get_tree().create_timer(communication_delay).timeout
 	var preconditions:bool = (
 		(unit_under_attack != null) and
 		(unit_to_attack  != null) and
@@ -51,7 +52,9 @@ func notify_others(unit_under_attack:Actor, unit_to_attack:Actor):
 			units.append(unit_entry)
 	units.sort_custom(sort_array_on_distance) # sort on distance
 	for i in range(communication_count):
-		units[i]["unit"].trigger_attack(unit_to_attack) # from closest to furthest, trigger attack
+		if i < len(units): # can only communicate to existing units
+			# TODO add check if unit is already attacking (to avoid sudden change of interest)
+			units[i]["unit"].trigger_attack(unit_to_attack) # from closest to furthest, trigger attack
 
 func _ready():
 	for unit:Actor in get_children():

@@ -22,6 +22,10 @@ func parse_CLA():
 			arguments[key_value[0].lstrip("-")] = key_value[1]
 	return arguments
 
+# LIST OF PARAMETERS BELOW!
+@export var communication_count : int = 1 # number of units to notify when attacking
+@export var communication_delay : float = 1.5 # takes 1.5s before notifying
+# READ IN PARAMETERS BELOW
 func set_CLA_vars():
 	var args = parse_CLA()
 	if args.has("ngames"):
@@ -34,6 +38,13 @@ func set_CLA_vars():
 			visible_games = true
 		else:
 			visible_games = false
+	if args.has("communication_count"):
+		if args["communication_count"].is_valid_int():
+			communication_count = int(args["communication_count"])
+		if args.has("communication_delay"):
+			if args["communication_delay"].is_valid_float():
+				communication_delay = float(args["communication_delay"])
+		
 
 # Called when the node enters the scene tree for the first time.
 # using deferred setup due to navigationserver error
@@ -76,9 +87,14 @@ func setup_instance(i:int):
 	# get all (previously onready) vars needed for instance setup
 	var bullet_mgr = new_game_instance.get_node("BulletManager")
 	var ally_map_pts = new_game_instance.get_node("AllyMapPoints")
-	var ally_ai = new_game_instance.get_node("AllyMapDirector")
-	var enemy_ai = new_game_instance.get_node("EnemyMapDirector")
+	var ally_ai:Director = new_game_instance.get_node("AllyMapDirector")
+	var enemy_ai:Director = new_game_instance.get_node("EnemyMapDirector")
 	var pathfinding = new_game_instance.get_node("Pathfinding")
+	# PARAMETER SETUP 
+	ally_ai.communication_count = communication_count
+	ally_ai.communication_delay = communication_delay
+	enemy_ai.communication_count = communication_count # TODO same as allies?
+	enemy_ai.communication_delay = communication_delay # TODO same as allies?
 	# connect Global Signal bullet fired
 	GlobalSignals.bullet_fired.connect(bullet_mgr.handle_bullet_spawned)
 	# initialize ally and enemy ai for instance
