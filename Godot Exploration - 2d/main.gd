@@ -6,6 +6,7 @@ var Game_Instance_Scene = preload("res://game_instance.tscn")
 @export var instance_num = 1;
 @export var visible_games = true;
 @export var flush_state = false;
+@export var timeout:int = 0;
 
 @onready var GAMES = $GAMES
 @onready var player: Player = $Player
@@ -28,6 +29,11 @@ func parse_CLA():
 # READ IN PARAMETERS BELOW
 func set_CLA_vars():
 	var args = parse_CLA()
+	if args.has("timeout"):
+		if args["timeout"].is_valid_int():
+			timeout = int(args["timeout"])
+		else:
+			print("ERROR! non-integer timeout specified")
 	if args.has("ngames"):
 		if args["ngames"].is_valid_int():
 			instance_num = int(args["ngames"])
@@ -51,6 +57,9 @@ func set_CLA_vars():
 # see https://github.com/godotengine/godot/issues/84677
 func _ready():
 	set_CLA_vars()
+	if timeout > 0:
+		$TimeOut.wait_time = timeout
+		$TimeOut.start()
 	seed(0) # doesnt work!
 	set_physics_process(false)
 	setup()
@@ -121,7 +130,9 @@ func flush_game_instance_state(filename, data):
 func _on_time_out_timeout():
 	outputhandler.write_buffered_data()
 	outputhandler.write_to_file("main", "games timed out")
-	#get_tree().quit()
+	for game_instance:GameInstance in GAMES.get_children():
+		game_instance.game_state.state_update(true,"", true) # store save on timeout
+	get_tree().quit()
 
 
 func _on_open_file_files_selected(paths):

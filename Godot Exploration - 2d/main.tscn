@@ -10,8 +10,9 @@
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_tkbst")
-instance_num = 9
-communication_count = 2
+instance_num = 4
+timeout = 3
+communication_count = 4
 communication_delay = 0.0
 
 [node name="OpenFile" type="FileDialog" parent="."]
@@ -57,7 +58,6 @@ script = ExtResource("6_a052t")
 
 [node name="TimeOut" type="Timer" parent="."]
 wait_time = 30.0
-autostart = true
 
 [node name="outputhandler" type="Node" parent="."]
 script = ExtResource("6_i0u21")

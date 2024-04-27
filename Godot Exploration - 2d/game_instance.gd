@@ -129,7 +129,7 @@ class GameState:
 	
 	signal state_flush(filename, data)
 	
-	func state_update(force=false, suffix=""):
+	func state_update(force=false, suffix="", timeout=false):
 		if force:
 			# get bullet data
 			state["bullets"] = {}
@@ -140,6 +140,8 @@ class GameState:
 		if force or flush:
 			self.state["timer"] = update_time
 			var filename = game_instance_name + "_" + str(update_time) + suffix
+			if timeout:
+				filename = game_instance_name + "_" + "TIMEOUT"
 			state_flush.emit(filename, JSON.stringify(state)) # emit state flush signal TODO every update or only every X?
 		
 	func update_team_damage(team, damage):

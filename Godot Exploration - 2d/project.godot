@@ -24,10 +24,6 @@ GlobalSignals="*res://globals/GlobalSignals.gd"
 window/vsync/vsync_mode=0
 mouse_cursor/custom_image="res://assets/cursor.png"
 
-[editor]
-
-run/main_run_args="-ngames=4 visible=true communication_count=4"
-
 [importer_defaults]
 
 texture={
