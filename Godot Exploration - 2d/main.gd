@@ -127,12 +127,19 @@ func setup():
 func flush_game_instance_state(filename, data):
 	outputhandler.write_to_file(filename, data)
 
-func _on_time_out_timeout():
+func _notification(what):
+	if what == NOTIFICATION_WM_CLOSE_REQUEST:
+		handle_end_of_game()
+
+func handle_end_of_game():
 	outputhandler.write_buffered_data()
 	outputhandler.write_to_file("main", "games timed out")
 	for game_instance:GameInstance in GAMES.get_children():
 		game_instance.game_state.state_update(true,"", true) # store save on timeout
 	get_tree().quit()
+
+func _on_time_out_timeout():
+	handle_end_of_game()
 
 
 func _on_open_file_files_selected(paths):

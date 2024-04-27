@@ -35,7 +35,8 @@ func stop_instance(allies_won:bool):
 		$"Game Over/AlliesWon".visible = true
 	else:
 		$"Game Over/EnemiesWon".visible = true
-	# TODO also stop remaining gameplay (or reset behaviour?)
+	game_state.state_update(true, "", false, true) # TODO what if there are still bullets flying?
+
 
 func _process(delta):
 	game_state.update_time += delta
@@ -129,7 +130,7 @@ class GameState:
 	
 	signal state_flush(filename, data)
 	
-	func state_update(force=false, suffix="", timeout=false):
+	func state_update(force=false, suffix="", timeout=false, gameover=false):
 		if force:
 			# get bullet data
 			state["bullets"] = {}
@@ -142,6 +143,8 @@ class GameState:
 			var filename = game_instance_name + "_" + str(update_time) + suffix
 			if timeout:
 				filename = game_instance_name + "_" + "TIMEOUT"
+			if gameover:
+				filename = game_instance_name + "_" + "GAMEOVER"
 			state_flush.emit(filename, JSON.stringify(state)) # emit state flush signal TODO every update or only every X?
 		
 	func update_team_damage(team, damage):
