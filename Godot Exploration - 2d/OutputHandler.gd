@@ -21,14 +21,18 @@ func init(instance_count):
 		gamesOutput.append("")
 
 # writes the given data to the given filename
-func write_to_file(filename, data):
+func write_to_file(filename, data, append=false):
 	if not FileAccess.file_exists("user://logs/" + filename + ".txt"):
 		var file = FileAccess.open("user://logs/" + filename + ".txt", FileAccess.WRITE) # should create empty file
 		file.store_string(data)
 		file.close()
 	else:
-		var file = FileAccess.open("user://logs/" + filename + ".txt", FileAccess.READ_WRITE) # should append
-		file.seek_end()
+		var access = FileAccess.WRITE
+		if append:
+			access = FileAccess.READ_WRITE
+		var file = FileAccess.open("user://logs/" + filename + ".txt", access)
+		if append:
+			file.seek_end()
 		file.store_string(data)
 		file.close()
 
