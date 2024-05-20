@@ -107,8 +107,11 @@ func setup_instance(i:int):
 	# connect Global Signal bullet fired
 	GlobalSignals.bullet_fired.connect(bullet_mgr.handle_bullet_spawned)
 	# initialize ally and enemy ai for instance
-	var ally_next_positions = ally_map_pts.get_positions()
-	ally_ai.initialize(ally_next_positions, pathfinding)
+	var ally_next_positions:Array = ally_map_pts.get_positions()
+	var ally_next_positions_rev:Array = ally_map_pts.get_positions()
+	ally_next_positions_rev.reverse() # add reverse to loop back through map
+	var ally_init_positions = ally_next_positions + ally_next_positions_rev 
+	ally_ai.initialize(ally_init_positions, pathfinding)
 	enemy_ai.initialize([], pathfinding)
 	# connect state flush to output handler
 	new_game_instance.game_state.connect("state_flush",flush_game_instance_state)

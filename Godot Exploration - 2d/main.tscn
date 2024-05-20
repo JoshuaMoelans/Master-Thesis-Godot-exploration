@@ -10,8 +10,10 @@
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_tkbst")
-communication_count = 3
-communication_delay = 0.0
+instance_num = 4
+visible_games = false
+communication_count = 2
+communication_delay = 0.2
 
 [node name="OpenFile" type="FileDialog" parent="."]
 title = "Open File(s)"
