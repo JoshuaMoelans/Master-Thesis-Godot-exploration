@@ -112,7 +112,7 @@ func _physics_process(delta: float) -> void:
 				#print("\t weapon is: ",str(weapon))
 				#print("\t target is: ",str(target))
 		State.ADVANCE, State.REPOSITION:
-			if current_path.size() == 0:
+			if current_path.size() == 0 or current_state == State.REPOSITION:
 				update_AI_goal(next_position)
 				current_path = pathfinding.get_new_path(global_position, next_position)
 			var path = current_path
@@ -204,7 +204,7 @@ func set_state(new_state: int):
 		origin = global_position
 		patrol_location_reached = true
 	elif new_state == State.ADVANCE:
-		if actor.has_reached_position(next_position):
+		if actor.has_reached_position(next_position) and initial_locations.size() == 0:
 			set_state(State.PATROL)
 	update_AI_state(get_state())
 	
