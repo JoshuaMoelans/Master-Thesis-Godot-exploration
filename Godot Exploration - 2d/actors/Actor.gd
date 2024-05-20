@@ -15,13 +15,14 @@ signal actor_hit_by(own_team, bullet_team, damage)
 func _ready() -> void:
 	ai.initialize(self, weapon.get_child(0), team.team)
 
-func trigger_attack(target):
+func trigger_attack(target, friendly):
 	# tries to trigger this unit to engage with given target
-	# TODO improve by first checking if target is even reachable from here;
-	# if not, maybe change objective to get close to original unit?
-	# TODO check behaviour post-trigger (sometimes seems to get stuck)
-	ai.engage_target(target)
-	ai.set_state(ai.State.ENGAGE)
+	var line_of_sight = ai.has_line_of_sight(target)
+	if not line_of_sight.is_empty(): # check if any collision
+		if line_of_sight["collider"] == target: # check if collision with target
+			ai.engage_target(target)
+			return
+	ai.tactical_reposition(friendly.global_position)
 
 func handle_hit(by_team:int):
 	# set make 'aware' of hit by expanding CollisionShape2D range

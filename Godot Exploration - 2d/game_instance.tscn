@@ -2028,7 +2028,7 @@ script = ExtResource("5_m1mjf")
 position = Vector2(119, 168)
 
 [node name="Ally2" parent="AllyMapDirector" instance=ExtResource("6_n7rv6")]
-position = Vector2(287, 343)
+position = Vector2(256, 343)
 
 [node name="Ally3" parent="AllyMapDirector" instance=ExtResource("6_n7rv6")]
 position = Vector2(30, 608)
@@ -2052,7 +2052,7 @@ position = Vector2(1723, 572)
 rotation = 3.13175
 
 [node name="Enemy4" parent="EnemyMapDirector" instance=ExtResource("7_fps2u")]
-position = Vector2(1423, 311)
+position = Vector2(1481, 331)
 rotation = 3.13175
 
 [node name="Pathfinding" parent="." instance=ExtResource("8_tkwnx")]

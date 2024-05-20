@@ -54,7 +54,7 @@ func notify_others(unit_under_attack:Actor, unit_to_attack:Actor):
 	for i in range(communication_count):
 		if i < len(units): # can only communicate to existing units
 			# TODO add check if unit is already attacking (to avoid sudden change of interest)
-			units[i]["unit"].trigger_attack(unit_to_attack) # from closest to furthest, trigger attack
+			units[i]["unit"].trigger_attack(unit_to_attack, unit_under_attack) # from closest to furthest, trigger attack
 
 func _ready():
 	for unit:Actor in get_children():

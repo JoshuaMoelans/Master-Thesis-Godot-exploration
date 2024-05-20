@@ -12,7 +12,8 @@ signal state_changed(new_state)
 enum State{
 	PATROL,
 	ENGAGE,
-	ADVANCE
+	ADVANCE,
+	REPOSITION # state to use when trying to move into new position
 }
 
 var current_state: int = -1 : set = set_state, get = get_state
@@ -82,11 +83,8 @@ func _physics_process(delta: float) -> void:
 					current_path = []
 		State.ENGAGE:
 			if target != null and weapon != null:
-				# Check if target is 'hittable'
-				var space_state = get_world_2d().direct_space_state
 				# use global coordinates, not local to node
-				var query = PhysicsRayQueryParameters2D.create(actor.global_position, target.global_position)
-				var result = space_state.intersect_ray(query)
+				var result = has_line_of_sight(target)
 				if result.is_empty():
 					set_state(previous_state)
 					return
@@ -141,6 +139,16 @@ func _physics_process(delta: float) -> void:
 				path_line.clear_points()
 		_:
 			print("Error switch to non-existent state")
+
+func has_line_of_sight(to):
+	# Check if given target is 'hittable'
+	var space_state = get_world_2d().direct_space_state
+	var query = PhysicsRayQueryParameters2D.create(actor.global_position, to.global_position)
+	return space_state.intersect_ray(query)
+
+func tactical_reposition(pos):
+	# high priority move towards given position
+	print(actor.name + " tactical move to " + str(pos))
 
 # helper function; takes in actor, text and single piece of data to print
 # gets current actor scope (container and instance) for output
