@@ -84,7 +84,7 @@ func _physics_process(delta: float) -> void:
 		State.ENGAGE:
 			if target != null and weapon != null:
 				# use global coordinates, not local to node
-				var result = has_line_of_sight(target)
+				var result = has_line_of_fire(target)
 				if result.is_empty():
 					set_state(previous_state)
 					return
@@ -111,7 +111,7 @@ func _physics_process(delta: float) -> void:
 				set_state(previous_state) # return to previous state
 				#print("\t weapon is: ",str(weapon))
 				#print("\t target is: ",str(target))
-		State.ADVANCE:
+		State.ADVANCE, State.REPOSITION:
 			if current_path.size() == 0:
 				update_AI_goal(next_position)
 				current_path = pathfinding.get_new_path(global_position, next_position)
@@ -125,6 +125,11 @@ func _physics_process(delta: float) -> void:
 				if global_position.distance_to(path[1]) < 5:
 					printhelper(actor, " reached next ADVANCE path point: ", path[1])
 					current_path.pop_front()  # remove path steps one by one when reaching point
+			if current_state == State.REPOSITION:  # move until line of sight to target
+				var los_check = has_line_of_fire(target)
+				if not los_check.is_empty(): # if collider hit
+					if los_check["collider"] == target:  # and hit target
+						set_state(State.ENGAGE)
 			# keep the line below to avoid 'clumping up' of units.
 			# TODO maybe add slight randomization on goal position?
 			if actor.global_position.distance_to(next_position) < goal_margin:
@@ -136,88 +141,31 @@ func _physics_process(delta: float) -> void:
 					update_AI_init_locs(initial_locations)
 				else:
 					set_state(State.PATROL)
+
 				path_line.clear_points()
 		_:
 			print("Error switch to non-existent state")
 
 func has_line_of_sight(to):
-	# Check if given target is 'hittable'
+	# Check if given target is reachable visually
+	if to == null:
+		return {}
 	var space_state = get_world_2d().direct_space_state
 	var query = PhysicsRayQueryParameters2D.create(actor.global_position, to.global_position)
 	return space_state.intersect_ray(query)
 
+func has_line_of_fire(to):
+	# Check if given target is 'hittable' by firing
+	if to == null:
+		return {}
+	var space_state = get_world_2d().direct_space_state
+	var query = PhysicsRayQueryParameters2D.create(weapon.global_position, to.global_position)
+	return space_state.intersect_ray(query)
+	
 func tactical_reposition(pos):
 	# high priority move towards given position
-	print(actor.name + " tactical move to " + str(pos))
-
-# helper function; takes in actor, text and single piece of data to print
-# gets current actor scope (container and instance) for output
-func printhelper(actor, text, data):
-	var container = actor.get_parent()
-	var instance = container.get_parent()
-	var mainOutputHandler : OutputHandler = instance.get_parent().get_parent().get_node("outputhandler")
-	var output = instance.name + "/" + container.name + "/" + actor.name + text + str(data)
-	mainOutputHandler.write_to_instance_buffer(instance.id, output)
-	if instance.verbose: # don't print if not verbose
-		print(output)
-
-func init_AI_state():
-	AI_State["id"] = actor.get_name()	
-	AI_State["position"] = actor.global_position # TODO check when to update?
-	AI_State["health"] = actor.health.health
-	AI_State["ammo"] = weapon.current_ammo
-	AI_State["path"] = []
-	AI_State["goal_position"] = null
-	AI_State["aim_direction"] = null
-	AI_State["target"] = null	
-	AI_State["state"] = State.PATROL
-	AI_State["previous_state"] = State.PATROL
-	AI_State["reload_count"] = 0
-	AI_State["initial_locations"] = initial_locations
-
-signal flush_AI_state_sgn (unit_name, newstate)
-
-func flush_AI_state():
-	flush_AI_state_sgn.emit(AI_State["id"], AI_State)
-
-func update_AI_target(newtarget_id):
-	AI_State["target"] = newtarget_id
-	flush_AI_state()
-
-func update_AI_init_locs(new_init_locs):
-	AI_State["initial_locations"] = new_init_locs
-	flush_AI_state()
-
-func update_AI_state(newstate):
-	AI_State["state"] = newstate
-	flush_AI_state()
-	
-func update_AI_health(newhealth):
-	AI_State["health"] = newhealth # if <=0 in State we know unit is dead
-	
-func update_AI_path(newpath):
-	AI_State["path"] = newpath
-	flush_AI_state()
-	
-func update_AI_ammo(newammo):
-	AI_State["ammo"] = newammo
-	flush_AI_state()
-
-func update_AI_reload():
-	AI_State["reload_count"] += 1
-	flush_AI_state()
-
-func update_AI_aim(aimdir):
-	AI_State["aim_direction"] = aimdir
-	flush_AI_state()
-
-func update_AI_prev_state(previous):
-	AI_State["previous_state"] = previous
-	flush_AI_state()
-
-func update_AI_goal(newgoal):
-	AI_State["goal_position"] = newgoal
-	flush_AI_state()
+	next_position = pos
+	set_state(State.REPOSITION)
 
 func initialize(actor, weapon:Weapon, team:int):
 	self.actor = actor
@@ -306,3 +254,72 @@ func _on_patrol_timer_timeout():
 	printhelper(actor, " set new PATROL destination: ", patrol_location)
 	patrol_location_reached = false
 
+
+# helper function; takes in actor, text and single piece of data to print
+# gets current actor scope (container and instance) for output
+func printhelper(actor, text, data):
+	var container = actor.get_parent()
+	var instance = container.get_parent()
+	var mainOutputHandler : OutputHandler = instance.get_parent().get_parent().get_node("outputhandler")
+	var output = instance.name + "/" + container.name + "/" + actor.name + text + str(data)
+	mainOutputHandler.write_to_instance_buffer(instance.id, output)
+	if instance.verbose: # don't print if not verbose
+		print(output)
+
+func init_AI_state():
+	AI_State["id"] = actor.get_name()	
+	AI_State["position"] = actor.global_position # TODO check when to update?
+	AI_State["health"] = actor.health.health
+	AI_State["ammo"] = weapon.current_ammo
+	AI_State["path"] = []
+	AI_State["goal_position"] = null
+	AI_State["aim_direction"] = null
+	AI_State["target"] = null	
+	AI_State["state"] = State.PATROL
+	AI_State["previous_state"] = State.PATROL
+	AI_State["reload_count"] = 0
+	AI_State["initial_locations"] = initial_locations
+
+signal flush_AI_state_sgn (unit_name, newstate)
+
+func flush_AI_state():
+	flush_AI_state_sgn.emit(AI_State["id"], AI_State)
+
+func update_AI_target(newtarget_id):
+	AI_State["target"] = newtarget_id
+	flush_AI_state()
+
+func update_AI_init_locs(new_init_locs):
+	AI_State["initial_locations"] = new_init_locs
+	flush_AI_state()
+
+func update_AI_state(newstate):
+	AI_State["state"] = newstate
+	flush_AI_state()
+	
+func update_AI_health(newhealth):
+	AI_State["health"] = newhealth # if <=0 in State we know unit is dead
+	
+func update_AI_path(newpath):
+	AI_State["path"] = newpath
+	flush_AI_state()
+	
+func update_AI_ammo(newammo):
+	AI_State["ammo"] = newammo
+	flush_AI_state()
+
+func update_AI_reload():
+	AI_State["reload_count"] += 1
+	flush_AI_state()
+
+func update_AI_aim(aimdir):
+	AI_State["aim_direction"] = aimdir
+	flush_AI_state()
+
+func update_AI_prev_state(previous):
+	AI_State["previous_state"] = previous
+	flush_AI_state()
+
+func update_AI_goal(newgoal):
+	AI_State["goal_position"] = newgoal
+	flush_AI_state()

@@ -17,12 +17,18 @@ func _ready() -> void:
 
 func trigger_attack(target, friendly):
 	# tries to trigger this unit to engage with given target
-	var line_of_sight = ai.has_line_of_sight(target)
+	var line_of_sight = ai.has_line_of_fire(target)
 	if not line_of_sight.is_empty(): # check if any collision
 		if line_of_sight["collider"] == target: # check if collision with target
 			ai.engage_target(target)
 			return
-	ai.tactical_reposition(friendly.global_position)
+	ai.target = target
+	var tactical_pos = friendly.global_position
+	if randf() < 0.5: # slight offset to position to reach
+		tactical_pos += Vector2(0,50)
+	else:
+		tactical_pos += Vector2(0,-50)
+	ai.tactical_reposition(tactical_pos)
 
 func handle_hit(by_team:int):
 	# set make 'aware' of hit by expanding CollisionShape2D range
