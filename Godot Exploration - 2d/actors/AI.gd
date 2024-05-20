@@ -72,8 +72,8 @@ func _physics_process(delta: float) -> void:
 					if global_position.distance_to(path[1]) < 5:
 						printhelper(actor, " reached next PATROL path point: ", path[1])
 						current_path.pop_front()  # remove path steps one by one when reaching point
-				# keep the line below to avoid 'clumping up' of units.
-				# TODO could use tutorial 21.14:30 to do similar 'get random position'
+					# keep the line below to avoid 'clumping up' of units.
+					# TODO could use tutorial 21.14:30 to do similar 'get random position'
 				if global_position.distance_to(patrol_location) < goal_margin: # goal_margin to avoid getting stuck
 					printhelper(actor, " reached PATROL location: ", patrol_location)
 					patrol_location_reached = true
@@ -165,7 +165,7 @@ func has_line_of_fire(to):
 func tactical_reposition(pos):
 	# high priority move towards given position
 	next_position = pos
-	set_state(State.REPOSITION)
+	set_state(State.REPOSITION) # TODO why is this sometimes only thing that happens (see ally3)
 
 func initialize(actor, weapon:Weapon, team:int):
 	self.actor = actor
@@ -200,7 +200,7 @@ func set_state(new_state: int):
 	current_state = new_state
 	printhelper(actor, " entering state ", State.keys()[new_state])
 	if new_state == State.PATROL:
-		patrol_timer.autostart = true
+		patrol_timer.start()
 		origin = global_position
 		patrol_location_reached = true
 	elif new_state == State.ADVANCE:
