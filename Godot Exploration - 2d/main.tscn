@@ -12,7 +12,8 @@
 script = ExtResource("1_tkbst")
 instance_num = 4
 visible_games = false
-communication_count = 2
+start_minimized = true
+communication_count = 0
 communication_delay = 0.2
 
 [node name="OpenFile" type="FileDialog" parent="."]

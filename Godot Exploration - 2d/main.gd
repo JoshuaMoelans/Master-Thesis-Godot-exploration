@@ -7,6 +7,7 @@ var Game_Instance_Scene = preload("res://game_instance.tscn")
 @export var visible_games = true;
 @export var flush_state = false;
 @export var timeout:int = 0;
+@export var start_minimized = false;
 
 @onready var GAMES = $GAMES
 @onready var player: Player = $Player
@@ -50,12 +51,19 @@ func set_CLA_vars():
 		if args.has("communication_delay"):
 			if args["communication_delay"].is_valid_float():
 				communication_delay = float(args["communication_delay"])
+	if args.has("start_minimized"):
+		if args["start_minimized"] == "true":
+			start_minimized = true
+		else:
+			start_minimized = false
 		
 
 # Called when the node enters the scene tree for the first time.
 # using deferred setup due to navigationserver error
 # see https://github.com/godotengine/godot/issues/84677
 func _ready():
+	if start_minimized:
+		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_MINIMIZED)
 	set_CLA_vars()
 	if timeout > 0:
 		$TimeOut.wait_time = timeout
