@@ -13,7 +13,7 @@ should_draw_path_line = true
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="DetectionZone"]
 shape = SubResource("CircleShape2D_hpcw5")
-debug_color = Color(0.980392, 0, 0, 0.14902)
+debug_color = Color(0.92549, 0, 0, 0.0196078)
 
 [node name="PatrolTimer" type="Timer" parent="."]
 wait_time = 3.0

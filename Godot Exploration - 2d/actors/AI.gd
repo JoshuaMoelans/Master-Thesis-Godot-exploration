@@ -82,6 +82,14 @@ func _physics_process(delta: float) -> void:
 					path_line.clear_points()
 					current_path = []
 		State.ENGAGE:
+			if target_buffer.is_empty():
+				set_state(previous_state)
+				return
+			var first_key = target_buffer.keys()[0]
+			self.target = target_buffer[first_key]
+			if target == null:
+				target_buffer.erase(first_key)  # only pop once target no longer exists
+				return
 			if target != null and weapon != null:
 				# use global coordinates, not local to node
 				var result = has_line_of_fire(target)
@@ -161,7 +169,7 @@ func has_line_of_fire(to):
 	var space_state = get_world_2d().direct_space_state
 	var query = PhysicsRayQueryParameters2D.create(weapon.global_position, to.global_position)
 	return space_state.intersect_ray(query)
-	
+
 func tactical_reposition(pos):
 	# high priority move towards given position
 	next_position = pos
@@ -174,7 +182,7 @@ func initialize(actor, weapon:Weapon, team:int):
 	self.team = team
 	weapon.connect("weapon_out_of_ammo", handle_reload)
 	init_AI_state()
-	
+
 func set_path_line(points: Array):
 	if not should_draw_path_line:
 		return
@@ -184,7 +192,7 @@ func set_path_line(points: Array):
 			local_points.append(Vector2.ZERO)
 		else:
 			local_points.append(point - global_position)
-	
+
 	path_line.points = local_points
 
 func set_weapon(weapon: Weapon):
@@ -194,12 +202,13 @@ func set_state(new_state: int):
 	if current_state == new_state:
 		return # early exit if no change needed
 	previous_state = current_state
-	if previous_state == State.ENGAGE:
-		set_vision_range(1.0) # if we were engageing, return to old vision range
+	if current_state == State.ENGAGE:
+		set_vision_range(1.0) # reset vision range (lower awareness)
 	update_AI_prev_state(previous_state)
 	current_state = new_state
 	printhelper(actor, " entering state ", State.keys()[new_state])
 	if new_state == State.PATROL:
+		patrol_timer.autostart = true
 		patrol_timer.start()
 		origin = global_position
 		patrol_location_reached = true
@@ -207,7 +216,7 @@ func set_state(new_state: int):
 		if actor.has_reached_position(next_position) and initial_locations.size() == 0:
 			set_state(State.PATROL)
 	update_AI_state(get_state())
-	
+
 func get_state() -> int:
 	return current_state
 
@@ -218,9 +227,15 @@ func _on_detection_zone_body_entered(body):
 		organic_engage.emit(get_parent(), body) # signal up
 		engage_target(body)
 
+var target_buffer = {} # TODO think about priority buffer
+var target_dict = {}
 func engage_target(target):
+	if not target_dict.has(target):  # only add if not in there yet
+		target_buffer[target_buffer.size()] = target  # for now, use size to set priority (fcfs) TODO other metrics?
+		target_dict[target] = target_buffer.size()-1
+		print(actor.name + " adding ", target.name, " to target buffer")
 	set_state(State.ENGAGE)
-	self.target = target
+	print("\t", target_buffer)
 	update_AI_target(target.name)
 
 func set_vision_range(size):
@@ -267,14 +282,14 @@ func printhelper(actor, text, data):
 		print(output)
 
 func init_AI_state():
-	AI_State["id"] = actor.get_name()	
+	AI_State["id"] = actor.get_name()
 	AI_State["position"] = actor.global_position # TODO check when to update?
 	AI_State["health"] = actor.health.health
 	AI_State["ammo"] = weapon.current_ammo
 	AI_State["path"] = []
 	AI_State["goal_position"] = null
 	AI_State["aim_direction"] = null
-	AI_State["target"] = null	
+	AI_State["target"] = null
 	AI_State["state"] = State.PATROL
 	AI_State["previous_state"] = State.PATROL
 	AI_State["reload_count"] = 0
@@ -296,14 +311,14 @@ func update_AI_init_locs(new_init_locs):
 func update_AI_state(newstate):
 	AI_State["state"] = newstate
 	flush_AI_state()
-	
+
 func update_AI_health(newhealth):
 	AI_State["health"] = newhealth # if <=0 in State we know unit is dead
-	
+
 func update_AI_path(newpath):
 	AI_State["path"] = newpath
 	flush_AI_state()
-	
+
 func update_AI_ammo(newammo):
 	AI_State["ammo"] = newammo
 	flush_AI_state()
