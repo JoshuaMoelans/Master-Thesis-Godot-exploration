@@ -2025,22 +2025,22 @@ position = Vector2(1789, 523)
 script = ExtResource("5_m1mjf")
 
 [node name="Ally" parent="AllyMapDirector" instance=ExtResource("6_n7rv6")]
-position = Vector2(119, 168)
+position = Vector2(164, 189)
 
 [node name="Ally2" parent="AllyMapDirector" instance=ExtResource("6_n7rv6")]
-position = Vector2(256, 343)
+position = Vector2(241, 332)
 
 [node name="Ally3" parent="AllyMapDirector" instance=ExtResource("6_n7rv6")]
-position = Vector2(30, 608)
+position = Vector2(105, 446)
 
 [node name="Ally4" parent="AllyMapDirector" instance=ExtResource("6_n7rv6")]
-position = Vector2(-29, 323)
+position = Vector2(9, 302)
 
 [node name="EnemyMapDirector" type="Node2D" parent="."]
 script = ExtResource("5_m1mjf")
 
 [node name="Enemy3" parent="EnemyMapDirector" instance=ExtResource("7_fps2u")]
-position = Vector2(1741, 117)
+position = Vector2(1888, 121)
 rotation = 3.13175
 
 [node name="Enemy" parent="EnemyMapDirector" instance=ExtResource("7_fps2u")]
@@ -2048,7 +2048,7 @@ position = Vector2(1876, 437)
 rotation = 3.13175
 
 [node name="Enemy2" parent="EnemyMapDirector" instance=ExtResource("7_fps2u")]
-position = Vector2(1864, 631)
+position = Vector2(1817, 648)
 rotation = 3.13175
 
 [node name="Enemy4" parent="EnemyMapDirector" instance=ExtResource("7_fps2u")]

@@ -62,9 +62,9 @@ func set_CLA_vars():
 # using deferred setup due to navigationserver error
 # see https://github.com/godotengine/godot/issues/84677
 func _ready():
+	set_CLA_vars()
 	if start_minimized:
 		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_MINIMIZED)
-	set_CLA_vars()
 	if timeout > 0:
 		$TimeOut.wait_time = timeout
 		$TimeOut.start()
