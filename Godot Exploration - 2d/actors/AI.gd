@@ -120,7 +120,7 @@ func _physics_process(delta: float) -> void:
 				#print("\t weapon is: ",str(weapon))
 				#print("\t target is: ",str(target))
 		State.ADVANCE, State.REPOSITION:
-			if current_path.size() == 0 or current_state == State.REPOSITION:
+			if current_path.size() == 0:
 				update_AI_goal(next_position)
 				current_path = pathfinding.get_new_path(global_position, next_position)
 			var path = current_path
@@ -173,6 +173,7 @@ func has_line_of_fire(to):
 func tactical_reposition(pos):
 	# high priority move towards given position
 	next_position = pos
+	current_path = [] # clear path
 	set_state(State.REPOSITION) # TODO why is this sometimes only thing that happens (see ally3)
 
 func initialize(actor, weapon:Weapon, team:int):
@@ -233,9 +234,9 @@ func engage_target(target):
 	if not target_dict.has(target):  # only add if not in there yet
 		target_buffer[target_buffer.size()] = target  # for now, use size to set priority (fcfs) TODO other metrics?
 		target_dict[target] = target_buffer.size()-1
-		print(actor.name + " adding ", target.name, " to target buffer")
+		#print(actor.name + " adding ", target.name, " to target buffer")
 	set_state(State.ENGAGE)
-	print("\t", target_buffer)
+	#print("\t", target_buffer)
 	update_AI_target(target.name)
 
 func set_vision_range(size):
@@ -273,6 +274,7 @@ func _on_patrol_timer_timeout():
 # helper function; takes in actor, text and single piece of data to print
 # gets current actor scope (container and instance) for output
 func printhelper(actor, text, data):
+	pass
 	var container = actor.get_parent()
 	var instance = container.get_parent()
 	var mainOutputHandler : OutputHandler = instance.get_parent().get_parent().get_node("outputhandler")

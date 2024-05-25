@@ -47,7 +47,8 @@ func write_to_instance_file(i:int, data:String):
 # writes the given data to the given instance file's buffer
 # gets flushed periodically to a file every 5s
 func write_to_instance_buffer(i:int, data):
-	gamesOutput[i] += "\n" + data
+	pass
+	#gamesOutput[i] += "\n" + data
 
 # writes buffered data for each instance
 func write_buffered_data():
