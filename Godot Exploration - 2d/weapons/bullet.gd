@@ -32,7 +32,7 @@ func get_state():
 
 func _on_body_entered(body):
 	if body.has_method("handle_hit"):  # anything that can be hit by a bullet needs this method implemented
-		body.handle_hit(TEAM)
+		body.handle_hit(self)
 	PIERCE -= 1
 	if PIERCE < 0:
 		queue_free()  # destroy bullet after it hits a body

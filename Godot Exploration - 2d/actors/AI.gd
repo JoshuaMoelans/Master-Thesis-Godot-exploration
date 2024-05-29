@@ -13,7 +13,8 @@ enum State{
 	PATROL,
 	ENGAGE,
 	ADVANCE,
-	REPOSITION # state to use when trying to move into new position
+	REPOSITION,  # state to use when trying to move into new position
+	ROTATE # state to force rotation
 }
 
 var current_state: int = -1 : set = set_state, get = get_state
@@ -60,6 +61,14 @@ func _physics_process(delta: float) -> void:
 	AI_State["position"] = global_position # TODO also flush whenever state change/checkpoint/patrol point?
 	path_line.global_rotation = 0 # reset pathing line rotation
 	match current_state:
+		State.ROTATE:
+			if not rotate_goal:
+				set_state(previous_state)
+				return
+			actor.rotate_toward(rotate_goal)
+			if abs(self.rotation - get_angle_to(rotate_goal)) < 0.01:
+				rotate_goal = null
+				set_state(previous_state)
 		State.PATROL:
 			if not patrol_location_reached:
 				if current_path.size() == 0:
@@ -245,6 +254,13 @@ func engage_target(target):
 
 func set_vision_range(size):
 	self.scale = Vector2(size, size) # scale is vision range
+
+var rotate_goal = null
+func rotate_towards(position):
+	if get_state() != State.ENGAGE:
+		rotate_goal = position
+		set_state(State.ROTATE)
+		print(actor.name, " set state to ROTATE")
 
 func _on_detection_zone_body_exited(body):
 	if target and body == target:

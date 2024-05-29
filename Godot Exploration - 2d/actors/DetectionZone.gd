@@ -2,7 +2,7 @@ extends Area2D
 
 @onready var visionCone = $CollisionPolygon2D
 
-func setCone(angle, distance, resolution=30):
+func setCone(angle, distance, resolution=60):
 	# Convert angle from degrees to radians
 	angle = angle * PI / 180
 	var half_angle = angle / 2

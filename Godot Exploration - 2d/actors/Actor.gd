@@ -30,9 +30,10 @@ func trigger_attack(target, friendly):
 		tactical_pos += Vector2(0,-50)
 	ai.tactical_reposition(tactical_pos)
 
-func handle_hit(by_team:int):
-	# set make 'aware' of hit by expanding CollisionShape2D range
-	ai.set_vision_range(1.2)
+func handle_hit(hit_by:Bullet):
+	var by_team = hit_by.TEAM
+	# set make 'aware' of hit by rotating towards bullet direction
+	ai.rotate_towards(hit_by.position)
 	var dmg = 20 # TODO maybe make parameter of Bullet?
 	health.health -= dmg
 	ai.update_AI_health(health.health)

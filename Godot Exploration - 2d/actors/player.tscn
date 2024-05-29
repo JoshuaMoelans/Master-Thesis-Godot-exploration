@@ -22,7 +22,9 @@ region_enabled = true
 region_rect = Rect2(349, 0, 38, 43)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+visible = false
 shape = SubResource("RectangleShape2D_ftm6t")
+debug_color = Color(1, 1, 1, 0)
 
 [node name="Health" parent="." instance=ExtResource("4_kq41h")]
 
