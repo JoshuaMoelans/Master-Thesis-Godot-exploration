@@ -12,8 +12,7 @@
 script = ExtResource("1_tkbst")
 communication_count = 2
 communication_delay = 0.2
-vision_distance = 150.0
-vision_angle = 30.0
+vision_distance = 450.0
 
 [node name="OpenFile" type="FileDialog" parent="."]
 title = "Open File(s)"
