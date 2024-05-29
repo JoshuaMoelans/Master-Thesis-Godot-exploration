@@ -1,19 +1,25 @@
-[gd_scene load_steps=3 format=3 uid="uid://c7f5l8ffw3kpb"]
+[gd_scene load_steps=4 format=3 uid="uid://c7f5l8ffw3kpb"]
 
 [ext_resource type="Script" path="res://actors/AI.gd" id="1_ny0yf"]
+[ext_resource type="Script" path="res://actors/DetectionZone.gd" id="2_3dn40"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_hpcw5"]
-radius = 286.016
+radius = 300.0
 
 [node name="AI" type="Node2D"]
 script = ExtResource("1_ny0yf")
 should_draw_path_line = true
 
 [node name="DetectionZone" type="Area2D" parent="."]
+script = ExtResource("2_3dn40")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="DetectionZone"]
 shape = SubResource("CircleShape2D_hpcw5")
+disabled = true
 debug_color = Color(0.92549, 0, 0, 0.0196078)
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="DetectionZone"]
+polygon = PackedVector2Array(0, 1, 250, -150, 250, 150)
 
 [node name="PatrolTimer" type="Timer" parent="."]
 wait_time = 3.0

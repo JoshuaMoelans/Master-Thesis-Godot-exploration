@@ -27,6 +27,8 @@ func parse_CLA():
 # LIST OF PARAMETERS BELOW!
 @export var communication_count : int = 1 # number of units to notify when attacking
 @export var communication_delay : float = 1.5 # takes 1.5s before notifying
+@export var vision_distance : float = 300  # how far a unit can 'see'
+@export var vision_angle : float = 60 # total vision angle (half above horizon, half below)
 # READ IN PARAMETERS BELOW
 func set_CLA_vars():
 	var args = parse_CLA()
@@ -48,9 +50,15 @@ func set_CLA_vars():
 	if args.has("communication_count"):
 		if args["communication_count"].is_valid_int():
 			communication_count = int(args["communication_count"])
-		if args.has("communication_delay"):
-			if args["communication_delay"].is_valid_float():
-				communication_delay = float(args["communication_delay"])
+	if args.has("communication_delay"):
+		if args["communication_delay"].is_valid_float():
+			communication_delay = float(args["communication_delay"])
+	if args.has("vision_angle"):
+		if args["vision_angle"].is_valid_float():
+			vision_angle = float(args["vision_angle"])
+	if args.has("vision_distance"):
+		if args["vision_distance"].is_valid_float():
+			vision_distance = float(args["vision_distance"])
 	if args.has("start_minimized"):
 		if args["start_minimized"] == "true":
 			start_minimized = true
@@ -112,6 +120,11 @@ func setup_instance(i:int):
 	ally_ai.communication_delay = communication_delay
 	enemy_ai.communication_count = communication_count # TODO same as allies?
 	enemy_ai.communication_delay = communication_delay # TODO same as allies?
+	ally_ai.vision_distance = vision_distance
+	ally_ai.vision_angle = vision_angle
+	enemy_ai.vision_distance = vision_distance
+	enemy_ai.vision_angle = vision_angle
+	
 	# connect Global Signal bullet fired
 	GlobalSignals.bullet_fired.connect(bullet_mgr.handle_bullet_spawned)
 	# initialize ally and enemy ai for instance

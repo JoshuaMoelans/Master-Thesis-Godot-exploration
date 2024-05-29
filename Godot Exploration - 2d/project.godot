@@ -25,10 +25,6 @@ window/size/initial_position_type=2
 window/vsync/vsync_mode=0
 mouse_cursor/custom_image="res://assets/cursor.png"
 
-[editor]
-
-run/main_run_args="start_minimized=true"
-
 [importer_defaults]
 
 texture={

@@ -11,6 +11,8 @@ enum PositionMoveOrder {
 # TODO might need to check for line-of-sight to target first?
 @export var communication_count : int = 1
 @export var communication_delay : float = 1.5 # takes 1.5s before notifying
+@export var vision_distance : float = 300  # how far a unit can 'see'
+@export var vision_angle : float = 60 # total vision angle (half above horizon, half below)
 
 var position_locations: Array = []
 var current_position_index = 0
@@ -67,6 +69,7 @@ func initialize(position_locations: Array, pathfinding: Pathfinding):
 		unit.ai.pathfinding  = pathfinding
 		unit.ai.initial_locations = position_locations.duplicate()
 		unit.ai.set_state(AI.State.PATROL) # set default state to PATROL
+		unit.ai.set_vision_cone(vision_angle, vision_distance)
 	self.position_locations = position_locations
 	var next_position = get_next_position()
 	if next_position != null and next_position != Vector2.ZERO:

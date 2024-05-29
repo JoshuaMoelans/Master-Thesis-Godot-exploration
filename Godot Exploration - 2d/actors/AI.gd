@@ -42,6 +42,10 @@ var vision_shape: CollisionShape2D = null
 func _ready():
 	path_line.visible = should_draw_path_line
 
+@onready var detection_zone = $DetectionZone
+func set_vision_cone(angle, distance):
+	detection_zone.setCone(angle, distance)
+
 func handle_reload():
 	printhelper(actor, " reloading weapon", "")
 	weapon.start_reload()
