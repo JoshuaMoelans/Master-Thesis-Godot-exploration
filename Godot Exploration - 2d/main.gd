@@ -8,7 +8,7 @@ var Game_Instance_Scene = preload("res://game_instance.tscn")
 @export var flush_state = false;
 @export var timeout:int = 0;
 @export var start_minimized = false;
-
+@export var timescale:float = 1.0
 @onready var GAMES = $GAMES
 @onready var player: Player = $Player
 @onready var gui = $GUI
@@ -64,6 +64,9 @@ func set_CLA_vars():
 			start_minimized = true
 		else:
 			start_minimized = false
+	if args.has("timescale"):
+		if args["timescale"].is_valid_float():
+			timescale = args["timescale"]
 		
 
 # Called when the node enters the scene tree for the first time.
@@ -76,7 +79,8 @@ func _ready():
 	if timeout > 0:
 		$TimeOut.wait_time = timeout
 		$TimeOut.start()
-	seed(0) # doesnt work!
+	seed(0) # doesnt 100% work!
+	Engine.set_time_scale(timescale)
 	set_physics_process(false)
 	setup()
 	
