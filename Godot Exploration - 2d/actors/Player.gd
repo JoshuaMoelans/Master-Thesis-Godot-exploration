@@ -4,6 +4,7 @@ class_name Player
 
 @export var SPEED:float = 300.0
 @onready var collision_shape = $CollisionShape2D
+@onready var sprite = $Sprite2D
 @onready var weapon_manager = $WeaponManager
 @onready var health = $Health
 @onready var team = $Team
@@ -14,6 +15,9 @@ signal move_allies(to_position:Vector2)
 signal player_health_changed(new_health)
 
 func _ready() -> void:
+	collision_shape.disabled = true
+	sprite.visible = false
+	weapon_manager.visible = false
 	pass
 
 func _physics_process(delta):
@@ -25,10 +29,13 @@ func _physics_process(delta):
 	if Input.is_action_pressed("up"):
 		movement_dir.y = -1
 	if Input.is_action_pressed("down"):
-		movement_dir.y = 1
+		if not Input.is_action_pressed("save"): # avoid moving if trying to save
+			movement_dir.y = 1
+	if Input.is_action_pressed("reset_scene"):
+		get_tree().reload_current_scene()		
 		
 	movement_dir = movement_dir.normalized()  # make sure speed is normalized
-	velocity = movement_dir*SPEED
+	velocity = movement_dir*SPEED * delta * 50
 
 	move_and_slide()
 	look_at(get_global_mouse_position())
